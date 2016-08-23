@@ -1,0 +1,20 @@
+= ledgerexport-tax
+
+Application that exports data from ledger to txt. +
+It is a register report for a given tax quarter.
+
+== Examples
+
+For Q1, the following files will be generated: +
+* reg_<date>_V001_btw_Q1.pdf +
+* reg_<date>_V001_btw_januari.pdf +
+* reg_<date>_V001_btw_februari.pdf +
+* reg_<date>_V001_btw_march.pdf
+
+The export is to txt-files, which are then converted to pdf files. +
+This last step is needed, because the accounting software I use, does not accept txt-files.
+
+== Dependencies
+
+* sbcl, since this is a common lisp script. +
+* vim, because that is used to transform the txt to pdf.
