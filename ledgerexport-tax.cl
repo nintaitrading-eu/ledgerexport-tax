@@ -26,8 +26,9 @@
 
 ; get-export-name:
 ; Determine name to use for the output
-(defun assemble-export-name ()
-  ; TBD
+(defun assemble-export-name (a-argument)
+  ; TODO: get current date etc.
+  (concatenate 'string "reg_" "20160822" "_V001_btw_" (string-upcase a-argument) ".txt") 
   ; "reg_20160822_V001_btw_Q2.txt"
 )
 
@@ -49,7 +50,8 @@
     ; Note: (intern ...) = string->symbol
     ((or
       (member (intern a-argument) +g-possible-arguments+)
-      (member (intern a-argument) +g-months+)) (export-to-txt a-argument))
+      (member (intern a-argument) +g-months+))
+        (export-to-txt (assemble-export-name a-argument)))
     (T (usage))))
 
 ; main
