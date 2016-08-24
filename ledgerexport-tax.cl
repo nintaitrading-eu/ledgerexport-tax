@@ -20,6 +20,8 @@
   (format t "Options:~%")
   (format t "~{~4tQ~a: exports the data for Q~a~%~}" (list 1 1 2 2 3 3 4 4))
   (format t "~4tmonth: exports the given month~%")
+  (format t "~8t(valid months are: january, february, march, april, may,~%")
+  (format t "~8t june, july, august, september, oktober, november, december)~%")
   (format t "~4t-h: shows this usage info message~%"))
 
 ; get-export-name:
