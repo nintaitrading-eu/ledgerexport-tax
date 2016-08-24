@@ -8,6 +8,11 @@
 ; It uses ledger data as a backend and also depends on vim for transforming
 ; the final report outputs from txt to pdf.
 
+; Global variables.
+(defconstant +g-months+ (list 'january 'february 'march 'april 'may 'june 'july 'august 'september 'oktober 'november 'december))
+(defconstant +g-termprefix+ ">>> ")
+(defconstant +g-possible-arguments+ (list 'Q1 'Q2 'Q3 'Q4))
+
 ; usage:
 ; Print usage info.
 (defun usage ()
@@ -27,20 +32,34 @@
 ; export-to-txt:
 ; Export accounting register data to txt,
 ; for the given period.
-(defun export-to-txt ()
-  ; TBD
+(defun export-to-txt (a-output-file)
+  (format t "~aExporting data to ~a...~%" +g-termprefix+ a-output-file)
+  ; TODO: how to call external application?
+  ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
 )
+
+; process-arguments:
+; Print usage info
+; or start export for a valid given period.
+(defun process-arguments (a-argument)
+  (cond
+    ((equal a-argument "-h") (usage))
+    ; Note: (intern ...) = string->symbol
+    ((or
+      (member (intern a-argument) +g-possible-arguments+)
+      (member (intern a-argument) +g-months+)) (export-to-txt a-argument))
+    (T (usage))))
 
 ; main
 ; Main code processing.
 (defun main ()
-  (defconstant *g-months* (list "January" "February" "March" "April" "May" "June" "July" "August" "September" "Oktober" "November" "December"))
-  (defconstant *g-termprefix* ">>> ")
   ; TODO: month->number?
-  ; info: number->month = (nth 1 *g-months*) = February
+  ; info: number->month = (nth 1 +g-months+) = February
   ; TODO: read cli params?
-  (cond ((= (length sb-ext:*posix-argv*) 2) (export-to-txt))
-        (T (usage))))
+  (format t "[DEBUG] Argument = ~a~%" (nth 1 sb-ext:*posix-argv*))
+  (cond
+    ((eq (length sb-ext:*posix-argv*) 2) (process-arguments (string-upcase (nth 1 sb-ext:*posix-argv*))))
+    (T (usage))))
 
 ; Main entry point, to start the code.
 (main)
