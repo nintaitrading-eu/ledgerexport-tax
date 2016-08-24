@@ -8,7 +8,11 @@
 ; It uses ledger data as a backend and also depends on vim for transforming
 ; the final report outputs from txt to pdf.
 
-(defun f-usage (
-  (format t "Usage: ledgerexport-tax~%" )))
+(defun f-usage ()
+  (format t "Usage: ledgerexport-tax.cl [Q1|Q2|Q3|Q4|month|-h]~%~%")
+  (format t "Options:~%")
+  (format t "~{~4tQ~a: exports the data for Q~a~%~}" (list 1 1 2 2 3 3 4 4))
+  (format t "~4tmonth: exports the given month~%")
+  (format t "~4t-h: shows this usage info message~%"))
 
 (f-usage)
