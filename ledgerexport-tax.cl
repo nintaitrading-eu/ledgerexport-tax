@@ -1,5 +1,4 @@
-#!/usr/local/bin/sbcl --script
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Author: Andy Nagels
 ; Date: 2016-08-23
 ;
@@ -7,6 +6,15 @@
 ; Script that prepares data for the quarterly tax reports.
 ; It uses ledger data as a backend and also depends on vim for transforming
 ; the final report outputs from txt to pdf.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Package definition.
+(defpackage :ledgerexport-tax
+  (:use :common-lisp)
+  (:export :main))
+
+(ql:quickload :asdf)
+
 
 ; Global variables.
 (defconstant +g-months+ (list 'january 'february 'march 'april 'may 'june 'july 'august 'september 'oktober 'november 'december))
@@ -38,6 +46,7 @@
 (defun export-to-txt (a-output-file)
   (format t "~aExporting data to ~a...~%" +g-termprefix+ a-output-file)
   ; TODO: how to call external application?
+  (run-program "ls")
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
 )
 
