@@ -27,11 +27,19 @@
   (format t "~8t june, july, august, september, oktober, november, december)~%")
   (format t "~4t-h: shows this usage info message~%"))
 
+; current-date-string:
+; Returns the current date as a string in YYYYMMDD format.
+(defun current-date-string ()
+  (multiple-value-bind (sec min hr day mon yr dow dst-p tz)
+    (get-decoded-time)
+    (declare (ignore sec min hr dow dst-p tz))
+    (format nil "~4,'0d~2,'0d~2,'0d" yr mon day)))
+
 ; get-export-name:
-; Determine name to use for the output
+; Determine name to use for the output.
 (defun assemble-export-name (a-argument)
   ; TODO: get current date etc.
-  (concatenate 'string "reg_" "20160822" "_V001_btw_" (string-upcase a-argument) ".txt") 
+  (concatenate 'string "reg_" (current-date-string) "_V001_btw_" (string-upcase a-argument) ".txt") 
   ; "reg_20160822_V001_btw_Q2.txt"
 )
 
