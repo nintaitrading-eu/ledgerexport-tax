@@ -12,7 +12,7 @@
 
 
 ; Global variables.
-(defconstant +g-months+ (list 'january 'february 'march 'april 'may 'june 'july 'august 'september 'oktober 'november 'december))
+(defconstant +g-months+ (list 'JANUARY 'FEBRUARY 'MARCH 'APRIL 'MAY 'JUNE 'JULY 'AUGUST 'SEPTEMBER 'OKTOBER 'NOVEMBER 'DECEMBER))
 (defconstant +g-termprefix+ ">>> ")
 (defconstant +g-quarters+ (list 'Q1 'Q2 'Q3 'Q4))
 
@@ -38,9 +38,7 @@
 ; get-export-name:
 ; Determine name to use for the output.
 (defun assemble-export-name (a-argument)
-  ; TODO: get current date etc.
   (concatenate 'string "reg_" (current-date-string) "_V001_btw_" (string-upcase a-argument) ".txt") 
-  ; "reg_20160822_V001_btw_Q2.txt"
 )
 
 ; export-to-txt:
@@ -55,8 +53,8 @@
   ; TODO: the below with (intern a-argument), only for the months.
   ; Also check if -p "january this year" is a valid PERIOD_EXPRESSION in ledger.
   (cond
-    ((member (intern a-argument) +g-quarters+) (uiop:run-program `("ledger -f ledger.dat" "-p \"" (intern a-argument) " this year\" reg | sort -n >" (assemble-export-name a-argument)) :output t :error-output t))
-    ((member (intern a-argument) +g-quarters+) (uiop:run-program `("ledger -f ledger.dat" "-b TBD reg | rost -n >" (assemble-export-name a-argument)) :output t :error-output t))
+    ((member (intern a-argument) +g-months+) (uiop:run-program `("ledger -f ledger.dat" "-p \"" (a-argument) " this year\" reg | sort -n > " (assemble-export-name a-argument)) :output t :error-output t))
+    ((member (intern a-argument) +g-quarters+) (uiop:run-program `("ledger -f ledger.dat" "-b TBD reg | sort -n > " (assemble-export-name a-argument)) :output t :error-output t))
     (T (format t "Error: Unknown argument ~a... export failed!~%" a-argument)))
   
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
@@ -78,11 +76,13 @@
 
 ; main
 ; Main code processing.
+; Note: sbcl --noinform --script ledger.dat Q1
+; That makes for 5 arguments.
 (defun main ()
   ; TODO: month->number?
   ; info: number->month = (nth 1 +g-months+) = February
   ; TODO: read cli params?
-  (format t "[DEBUG] Argument = ~a~%" (nth 2 sb-ext:*posix-argv*))
+  (format t "[DEBUG] arg-lengt = ~a | a-ledger-file = ~a | a-argument = ~a~%" (length sb-ext:*posix-argv*) (nth 1 sb-ext:*posix-argv*) (nth 2 sb-ext:*posix-argv*))
   (cond
     ((eq (length sb-ext:*posix-argv*) 3) (process-arguments (nth 1 sb-ext:*posix-argv*) (string-upcase (nth 2 sb-ext:*posix-argv*))))
     (T (usage))))
