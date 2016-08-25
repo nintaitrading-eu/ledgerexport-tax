@@ -3,7 +3,7 @@
 ; TODO: below is for windows. Change to the one below that, for FreeBSD.
 (load "C:\\Users\\a.nagels\\.sbclrc") ; Make quicklisp's ql available
 ;(load "$HOME/.sbclrc")
-(load "ledgerexport-tax.cl")
+(load "package.lisp")
 (in-package :ledgerexport-tax)
 
 (main)
