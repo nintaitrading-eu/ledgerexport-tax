@@ -19,7 +19,7 @@
 ; usage:
 ; Print usage info.
 (defun usage ()
-  (format t "Usage: ledgerexport-tax.cl [Q1|Q2|Q3|Q4|month|-h]~%~%")
+  (format t "Usage: sbcl --noinform --script ledgerexport-tax.lisp \"path/to/ledger.dat\" [Q1|Q2|Q3|Q4|month|-h]~%~%")
   (format t "Options:~%")
   (format t "~{~4tQ~a: exports the data for Q~a~%~}" (list 1 1 2 2 3 3 4 4))
   (format t "~4tmonth: exports the given month~%")
@@ -65,10 +65,11 @@
 ; process-arguments:
 ; Print usage info
 ; or start export for a valid given period.
-(defun process-arguments (a-argument)
+(defun process-arguments (a-ledger-file a-argument)
   (cond
     ((equal a-argument "-h") (usage))
     ; Note: (intern ...) = string->symbol
+    ((probe-file (make-pathname :directory '(:absolute "") :name a-ledger-file)) (usage))
     ((or
       (member (intern a-argument) +g-quarters+)
       (member (intern a-argument) +g-months+))
@@ -81,9 +82,9 @@
   ; TODO: month->number?
   ; info: number->month = (nth 1 +g-months+) = February
   ; TODO: read cli params?
-  (format t "[DEBUG] Argument = ~a~%" (nth 1 sb-ext:*posix-argv*))
+  (format t "[DEBUG] Argument = ~a~%" (nth 2 sb-ext:*posix-argv*))
   (cond
-    ((eq (length sb-ext:*posix-argv*) 2) (process-arguments (string-upcase (nth 1 sb-ext:*posix-argv*))))
+    ((eq (length sb-ext:*posix-argv*) 3) (process-arguments (nth 1 sb-ext:*posix-argv*) (string-upcase (nth 2 sb-ext:*posix-argv*))))
     (T (usage))))
 
 ; Main entry point, to start the code.
