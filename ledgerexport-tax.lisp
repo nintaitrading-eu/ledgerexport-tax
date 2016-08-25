@@ -8,7 +8,7 @@
 ; the final report outputs from txt to pdf.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(in-package #:ledgerexport-tax)
+(require "asdf")
 
 
 ; Global variables.
@@ -41,7 +41,7 @@
 (defun export-to-txt (a-output-file)
   (format t "~aExporting data to ~a...~%" +g-termprefix+ a-output-file)
   ; TODO: how to call external application?
-  (run-program "ls")
+  (uiop:run-program `("C:\\Program Files (x86)\\Gow\\bin\\ls.exe" "-lh") :output t :error-output t)
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
 )
 
