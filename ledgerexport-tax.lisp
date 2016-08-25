@@ -14,7 +14,7 @@
 ; Global variables.
 (defconstant +g-months+ (list 'january 'february 'march 'april 'may 'june 'july 'august 'september 'oktober 'november 'december))
 (defconstant +g-termprefix+ ">>> ")
-(defconstant +g-possible-arguments+ (list 'Q1 'Q2 'Q3 'Q4))
+(defconstant +g-quarters+ (list 'Q1 'Q2 'Q3 'Q4))
 
 ; usage:
 ; Print usage info.
@@ -49,12 +49,16 @@
 (defun export-to-txt (a-argument)
   (format t "~aExporting data to ~a...~%" +g-termprefix+ (assemble-export-name a-argument))
   ; TODO: The below is a windows test for application calling. Remove it.
-  (uiop:run-program `("C:\\Program Files (x86)\\Gow\\bin\\ls.exe" "-lh") :output t :error-output t)
+  ;(uiop:run-program `("C:\\Program Files (x86)\\Gow\\bin\\ls.exe" "-lh") :output t :error-output t)
   ; TODO: if a-argument in Q1-4 then call ledger with the appropriate dates.
   ; if a-argument in months then call ledger with -p? But what about the year?
   ; TODO: the below with (intern a-argument), only for the months.
   ; Also check if -p "january this year" is a valid PERIOD_EXPRESSION in ledger.
-  (uiop:run-program `("ledger -f ledger.dat" "-p \"" (intern a-argument) " this year\"" "-lh") :output t :error-output t)
+  (cond
+    ((member (intern a-argument) +g-quarters+) (uiop:run-program `("ledger -f ledger.dat" "-p \"" (intern a-argument) " this year\" reg | sort -n >" (assemble-export-name a-argument)) :output t :error-output t))
+    ((member (intern a-argument) +g-quarters+) (uiop:run-program `("ledger -f ledger.dat" "-b TBD reg | rost -n >" (assemble-export-name a-argument)) :output t :error-output t))
+    (T (format t "Error: Unknown argument ~a... export failed!~%" a-argument)))
+  
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
 )
 
@@ -66,7 +70,7 @@
     ((equal a-argument "-h") (usage))
     ; Note: (intern ...) = string->symbol
     ((or
-      (member (intern a-argument) +g-possible-arguments+)
+      (member (intern a-argument) +g-quarters+)
       (member (intern a-argument) +g-months+))
         (export-to-txt a-argument))
     (T (usage))))
