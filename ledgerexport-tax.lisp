@@ -66,10 +66,11 @@
 ; Print usage info
 ; or start export for a valid given period.
 (defun process-arguments (a-ledger-file a-argument)
+  (format t "[debug] a-ledger-file = ~a, path = ~a~%" a-ledger-file (make-pathname :directory '(:absolute "") :name a-ledger-file))
   (cond
     ((equal a-argument "-h") (usage))
     ; Note: (intern ...) = string->symbol
-    ((probe-file (make-pathname :directory '(:absolute "") :name a-ledger-file)) (usage))
+    ((not (probe-file a-ledger-file)) (format t "Error: ~a does not exist..." a-ledger-file))
     ((or
       (member (intern a-argument) +g-quarters+)
       (member (intern a-argument) +g-months+))
@@ -84,7 +85,7 @@
   ; TODO: month->number?
   ; info: number->month = (nth 1 +g-months+) = February
   ; TODO: read cli params?
-  (format t "[DEBUG] arg-lengt = ~a | a-ledger-file = ~a | a-argument = ~a~%" (length sb-ext:*posix-argv*) (nth 1 sb-ext:*posix-argv*) (nth 2 sb-ext:*posix-argv*))
+  (format t "[DEBUG] arg-length = ~a | a-ledger-file = ~a | a-argument = ~a~%" (length sb-ext:*posix-argv*) (nth 1 sb-ext:*posix-argv*) (nth 2 sb-ext:*posix-argv*))
   (cond
     ((eq (length sb-ext:*posix-argv*) 3) (process-arguments (nth 1 sb-ext:*posix-argv*) (string-upcase (nth 2 sb-ext:*posix-argv*))))
     (T (usage))))
