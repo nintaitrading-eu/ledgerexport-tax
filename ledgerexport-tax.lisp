@@ -81,10 +81,6 @@
 ; Note: sbcl --noinform --script ledger.dat Q1
 ; That makes for 5 arguments.
 (defun main ()
-  ; TODO: month->number?
-  ; info: number->month = (nth 1 +g-months+) = February
-  ; TODO: read cli params?
-  (format t "[DEBUG] arg-length = ~a | a-ledger-file = ~a | a-argument = ~a~%" (length sb-ext:*posix-argv*) (nth 1 sb-ext:*posix-argv*) (nth 2 sb-ext:*posix-argv*))
   (cond
     ((eq (length sb-ext:*posix-argv*) 3) (process-arguments (nth 1 sb-ext:*posix-argv*) (string-upcase (nth 2 sb-ext:*posix-argv*))))
     (T (usage))))
