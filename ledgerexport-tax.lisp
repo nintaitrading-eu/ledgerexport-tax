@@ -66,7 +66,6 @@
 ; Print usage info
 ; or start export for a valid given period.
 (defun process-arguments (a-ledger-file a-argument)
-  (format t "[debug] a-ledger-file = ~a, path = ~a~%" a-ledger-file (make-pathname :directory '(:absolute "") :name a-ledger-file))
   (cond
     ((equal a-argument "-h") (usage))
     ; Note: (intern ...) = string->symbol
