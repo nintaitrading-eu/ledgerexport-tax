@@ -13,8 +13,8 @@
 
 ; Global variables.
 (defconstant +g-months+ (list 'JANUARY 'FEBRUARY 'MARCH 'APRIL 'MAY 'JUNE 'JULY 'AUGUST 'SEPTEMBER 'OKTOBER 'NOVEMBER 'DECEMBER))
-(defconstant +g-termprefix+ ">>> ")
 (defconstant +g-quarters+ (list 'Q1 'Q2 'Q3 'Q4))
+(defconstant +g-termprefix+ ">>> ")
 
 ; usage:
 ; Print usage info.
@@ -53,8 +53,10 @@
   ; TODO: the below with (intern a-argument), only for the months.
   ; Also check if -p "january this year" is a valid PERIOD_EXPRESSION in ledger.
   (cond
-    ((member (intern a-argument) +g-months+) (uiop:run-program `("ledger -f ledger.dat" "-p \"" (a-argument) " this year\" reg | sort -n > " (assemble-export-name a-argument)) :output t :error-output t))
-    ((member (intern a-argument) +g-quarters+) (uiop:run-program `("ledger -f ledger.dat" "-b TBD reg | sort -n > " (assemble-export-name a-argument)) :output t :error-output t))
+    ((member (intern a-argument) +g-months+) (sb-ext:run-program "ledger" (list "-f" "ledger.dat" "-p \"" a-argument " this year\" reg | sort -n > " (assemble-export-name a-argument)) :output *standard-output*))
+    ; TODO: the below is how you use arguments. Implement that for creating the correct commands.
+    ;((member (intern a-argument) +g-months+) (sb-ext:run-program "C:\\Program Files (x86)\\Gow\\bin\\ls.exe" (list "-lh" a-argument) :output *standard-output*))
+    ((member (intern a-argument) +g-quarters+) (sb-ext:run-program "ledger" (list "-f" "ledger.dat" "-b TBD reg | sort -n > " (assemble-export-name a-argument)) :output *standard-output*))
     (T (format t "Error: Unknown argument ~a... export failed!~%" a-argument)))
   
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
