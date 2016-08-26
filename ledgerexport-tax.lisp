@@ -34,7 +34,7 @@
 
 (defun assemble-export-name (a-argument a-extension)
   "Determine name to use for the output."
-  (concatenate 'string "reg_" (current-date-string) "_V001_btw_" (string-upcase a-argument) a-extension) 
+  (concatenate 'string "reg_" (current-date-string) "_V001_btw_" (string-upcase a-argument) a-extension)
 )
 
 (defun export-to-txt (a-ledger-file a-argument)
@@ -52,7 +52,6 @@
     ;((member (intern a-argument) +g-months+) (sb-ext:run-program "C:\\Program Files (x86)\\Gow\\bin\\ls.exe" (list "-lh" a-argument) :output *standard-output*))
     ((member (intern a-argument) +g-quarters+) (sb-ext:run-program +g-ledger-cmd+ (list "-f" a-ledger-file "-b TBD reg | sort -n > " (assemble-export-name a-argument ".txt")) :output *standard-output*))
     (T (format t "Error: Unknown argument ~a... export failed!~%" a-argument)))
-  
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
 )
 
@@ -71,7 +70,8 @@
 (defun main ()
   "Main code processing.
 Note: sbcl --noinform --script ledger.dat Q1
-That makes for 5 arguments."
+That makes for 5 arguments. But sbcl --noinform --script counts as 1 whole.
+So that leaves 3 arguments to be checked for..."
   (cond
     ((eq (length sb-ext:*posix-argv*) 3) (process-arguments (nth 1 sb-ext:*posix-argv*) (string-upcase (nth 2 sb-ext:*posix-argv*))))
     (T (usage))))
