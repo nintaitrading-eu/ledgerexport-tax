@@ -1,7 +1,4 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Author: Andy Nagels
-;;;; Date: 2016-08-23
-;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; ledgerexport-tax.lisp:
 ;;;; Script that prepares data for the quarterly tax reports.
 ;;;; It uses ledger data as a backend and also depends on vim for transforming
@@ -15,11 +12,11 @@
 (defconstant +g-months+ (list 'JANUARY 'FEBRUARY 'MARCH 'APRIL 'MAY 'JUNE 'JULY 'AUGUST 'SEPTEMBER 'OKTOBER 'NOVEMBER 'DECEMBER))
 (defconstant +g-quarters+ (list 'Q1 'Q2 'Q3 'Q4))
 (defconstant +g-termprefix+ ">>> ")
-(defconstant +g-ledger-cmd+ "ledger.cmd") ; TODO:
+(defconstant +g-ledger-cmd+ "ledger.cmd") ; TODO: change command on freebsd to just ledger.
 
-;; usage:
-;; Print usage info.
+;;; Functions.
 (defun usage ()
+  "Print usage info."
   (format t "Usage: sbcl --noinform --script ledgerexport-tax.lisp \"path/to/ledger.dat\" [Q1|Q2|Q3|Q4|month|-h]~%~%")
   (format t "Options:~%")
   (format t "~{~4tQ~a: exports the data for Q~a~%~}" (list 1 1 2 2 3 3 4 4))
@@ -28,24 +25,20 @@
   (format t "~8t june, july, august, september, oktober, november, december)~%")
   (format t "~4t-h: shows this usage info message~%"))
 
-;; current-date-string:
-;; Returns the current date as a string in YYYYMMDD format.
 (defun current-date-string ()
+  "Returns the current date as a string in YYYYMMDD format."
   (multiple-value-bind (sec min hr day mon yr dow dst-p tz)
     (get-decoded-time)
     (declare (ignore sec min hr dow dst-p tz))
     (format nil "~4,'0d~2,'0d~2,'0d" yr mon day)))
 
-;; assemble-export-name:
-;; Determine name to use for the output.
 (defun assemble-export-name (a-argument a-extension)
+  "Determine name to use for the output."
   (concatenate 'string "reg_" (current-date-string) "_V001_btw_" (string-upcase a-argument) a-extension) 
 )
 
-;; export-to-txt:
-;; Export accounting register data to txt,
-;; for the given period.
 (defun export-to-txt (a-ledger-file a-argument)
+  "Export accounting register data to txt, for the given period."
   (format t "~aExporting data to ~a...~%" +g-termprefix+ (assemble-export-name a-argument ".txt"))
   ; TODO: The below is a windows test for application calling. Remove it.
   ;(uiop:run-program `("C:\\Program Files (x86)\\Gow\\bin\\ls.exe" "-lh") :output t :error-output t)
@@ -63,10 +56,8 @@
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
 )
 
-;; process-arguments:
-;; Print usage info
-;; or start export for a valid given period.
 (defun process-arguments (a-ledger-file a-argument)
+  "Print usage info or start export for a valid given period."
   (cond
     ((equal a-argument "-h") (usage))
     ; Note: (intern ...) = string->symbol
@@ -77,11 +68,10 @@
         (export-to-txt a-ledger-file a-argument))
     (T (usage))))
 
-;; main
-;; Main code processing.
-;; Note: sbcl --noinform --script ledger.dat Q1
-;; That makes for 5 arguments.
 (defun main ()
+  "Main code processing.
+Note: sbcl --noinform --script ledger.dat Q1
+That makes for 5 arguments."
   (cond
     ((eq (length sb-ext:*posix-argv*) 3) (process-arguments (nth 1 sb-ext:*posix-argv*) (string-upcase (nth 2 sb-ext:*posix-argv*))))
     (T (usage))))
