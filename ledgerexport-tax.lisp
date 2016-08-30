@@ -5,9 +5,6 @@
 ;;;; the final report outputs from txt to pdf.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; Require statements
-(require "asdf")
-
 ;;; Global variables.
 (defconstant +g-months+ (list 'JANUARY 'FEBRUARY 'MARCH 'APRIL 'MAY 'JUNE 'JULY 'AUGUST 'SEPTEMBER 'OKTOBER 'NOVEMBER 'DECEMBER))
 (defconstant +g-quarters+ (list 'Q1 'Q2 'Q3 'Q4))
@@ -51,10 +48,16 @@
         (list "-f" a-ledger-file "-p \"" a-argument " this year\" reg | sort -n > "
           (assemble-export-name a-argument ".txt")) :output *standard-output*))
     ; TODO: the below is how you use arguments. Implement that for creating the correct commands.
+    ;; test with sb-ext:run-program for win32
+    ;((member (intern a-argument) +g-quarters+)
+    ;  (sb-ext:run-program "C:\\Program Files (x86)\\Gow\\bin\\ls.exe"
+    ;    (list "-lh" "|" "grep" "ledger"
+    ;      ) :output (assemble-export-name a-argument ".txt")))
+    ;; test with inferior-shell for win32
     ((member (intern a-argument) +g-quarters+)
-      (sb-ext:run-program "C:\\Program Files (x86)\\Gow\\bin\\ls.exe"
-        (list "-lh" "|" "grep" "ledger"
-          ) :output (assemble-export-name a-argument ".txt")))
+      (inferior-shell:run/ss `(inferior-shell:pipe
+        ("C:\\Program Files (x86)\\Gow\\bin\\ls.exe" "-lh") (grep "ledger")))
+        :output (assemble-export-name a-argument ".txt"))
     ;((member (intern a-argument) +g-quarters+)
     ;  (sb-ext:run-program +g-ledger-cmd+
     ;    (list "-f" a-ledger-file "-b TBD reg | sort -n > "

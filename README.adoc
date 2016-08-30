@@ -18,3 +18,13 @@ This last step is needed, because the accounting software I use, does not accept
 
 * sbcl, since this is a common lisp script. +
 * vim, because that is used to transform the txt to pdf.
+
+== Loading
+
+You can start sbcl and execute: +
+(push #p"/path/to/dev/ledgerexport-tax/")
+
+followed by a: +
+(ql:quickload :ledgerexport-tax)
+
+TODO: Find a better way to do this. I also need to do the push thing everytime, which seems weird to me.

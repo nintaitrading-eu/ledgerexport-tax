@@ -1,5 +1,5 @@
 ;;;; package.lisp
 
 (defpackage #:ledgerexport-tax
-  (:use #:cl))
-
+  (:use #:cl)
+  (:shadowing-import-from #:inferior-shell))
