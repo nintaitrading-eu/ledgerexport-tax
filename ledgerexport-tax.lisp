@@ -47,10 +47,16 @@
   ; TODO: the below with (intern a-argument), only for the months.
   ; Also check if -p "january this year" is a valid PERIOD_EXPRESSION in ledger.
   (cond
-    ((member (intern a-argument) +g-months+) (sb-ext:run-program +g-ledger-cmd+ (list "-f" a-ledger-file "-p \"" a-argument " this year\" reg | sort -n > " (assemble-export-name a-argument ".txt")) :output *standard-output*))
+    ((member (intern a-argument) +g-months+)
+      (sb-ext:run-program +g-ledger-cmd+
+        (list "-f" a-ledger-file "-p \"" a-argument " this year\" reg | sort -n > "
+          (assemble-export-name a-argument ".txt")) :output *standard-output*))
     ; TODO: the below is how you use arguments. Implement that for creating the correct commands.
     ;((member (intern a-argument) +g-months+) (sb-ext:run-program "C:\\Program Files (x86)\\Gow\\bin\\ls.exe" (list "-lh" a-argument) :output *standard-output*))
-    ((member (intern a-argument) +g-quarters+) (sb-ext:run-program +g-ledger-cmd+ (list "-f" a-ledger-file "-b TBD reg | sort -n > " (assemble-export-name a-argument ".txt")) :output *standard-output*))
+    ((member (intern a-argument) +g-quarters+)
+      (sb-ext:run-program +g-ledger-cmd+
+        (list "-f" a-ledger-file "-b TBD reg | sort -n > "
+          (assemble-export-name a-argument ".txt")) :output *standard-output*))
     (T (format t "Error: Unknown argument ~a... export failed!~%" a-argument)))
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
 )
@@ -60,7 +66,7 @@
   (cond
     ((equal a-argument "-h") (usage))
     ; Note: (intern ...) = string->symbol
-    ((not (probe-file a-ledger-file)) (format t "Error: ~a does not exist..." a-ledger-file))
+    ((not (probe-file a-ledger-file)) (format t "Error: ~a does not exist...~%" a-ledger-file))
     ((or
       (member (intern a-argument) +g-quarters+)
       (member (intern a-argument) +g-months+))
@@ -72,8 +78,11 @@
 Note: sbcl --noinform --script ledger.dat Q1
 That makes for 5 arguments. But sbcl --noinform --script counts as 1 whole.
 So that leaves 3 arguments to be checked for..."
+  ; TODO: add extra code, that calls process-arguments for JANUARY/FEBRUARI/MARCH,
+  ; when called with Q1. Do the same logic for Q2-4.
   (cond
-    ((eq (length sb-ext:*posix-argv*) 3) (process-arguments (nth 1 sb-ext:*posix-argv*) (string-upcase (nth 2 sb-ext:*posix-argv*))))
+    ((eq (length sb-ext:*posix-argv*) 3)
+      (process-arguments (nth 1 sb-ext:*posix-argv*) (string-upcase (nth 2 sb-ext:*posix-argv*))))
     (T (usage))))
 
 ;;; Main entry point, to start the code.
