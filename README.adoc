@@ -28,3 +28,21 @@ followed by a: +
 (ql:quickload :ledgerexport-tax)
 
 TODO: Find a better way to do this. I also need to do the push thing everytime, which seems weird to me.
+
+There is also the following to be added to .sblrc: +
+
+++++
+;;; The following was added, to allow ql:quickload on own projects.
+#+quicklisp
+(progn
+(pushnew #P"/home/myusername/dev/ledgerexport-tax/"
+ql:*local-project-directories*))
+++++
+
+This allows starting sbcl and doing
+
+++++
+(ql:quickload :ledgerexport-tax)
+++++
+
+but it doesn't work for starting as a script with sbcl --noinform --script.
