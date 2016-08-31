@@ -56,13 +56,18 @@
     ;    (list "-lh" "|" "grep" "ledger"
     ;      ) :output (assemble-export-name a-argument ".txt")))
     ;; test with inferior-shell for win32
-    ((member (intern a-argument) +g-quarters+)
-      (inferior-shell:run/ss `(inferior-shell:pipe
-        ("C:\\Program Files (x86)\\Gow\\bin\\ls.exe" "-lh") (grep "ledger")))
-        :output (assemble-export-name a-argument ".txt"))
     ;((member (intern a-argument) +g-quarters+)
-    ;  (sb-ext:run-program +g-ledger-cmd+
+    ;  (inferior-shell:run/ss `(inferior-shell:pipe
+    ;    ("C:\\Program Files (x86)\\Gow\\bin\\ls.exe" "-lh") (grep "ledger")))
+    ;    :output (assemble-export-name a-argument ".txt"))
+    ; TODO: inferior-shell doesn't seem to work on FreeBSD. The below does work,
+    ; but what about the piping thing?
+    ; TODO: but the same problems exist with grep, |, etc. That's why I wanted to use
+    ; inferior-shell... dagnabbit!
+    ((member (intern a-argument) +g-quarters+)
+      (sb-ext:run-program ;+g-ledger-cmd+
     ;    (list "-f" a-ledger-file "-b TBD reg | sort -n > "
+         "/bin/ls" (list "-lh" "|" "grep" "ledger") :output (assemble-export-name a-argument ".txt")))
     ;      (assemble-export-name a-argument ".txt")) :output *standard-output*))
     (T (format t "Error: Unknown argument ~a... export failed!~%" a-argument)))
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
