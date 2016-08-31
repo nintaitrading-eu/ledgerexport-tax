@@ -46,3 +46,10 @@ This allows starting sbcl and doing
 ++++
 
 but it doesn't work for starting as a script with sbcl --noinform --script.
+
+After loading like that, you can set parameters and call main, like this:
+
+++++
+(setf sb-ext:*posix-argv* (list "sbcl" "~/doc/ledger/ledger.dat" "Q1"))
+(main)
+++++
