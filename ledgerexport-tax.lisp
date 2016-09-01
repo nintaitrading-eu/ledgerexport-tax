@@ -36,8 +36,16 @@
   (concatenate 'string "reg_" (current-date-string) "_V001_btw_" (string-upcase a-argument) a-extension)
 )
 
+(defun remove-file-if-exists (a-file)
+  "Checks if a file exists and if it does, it deletes it."
+  (with-open-file (s a-file :direction :output :if-exists :error)
+    (delete-file s))
+
 (defun export-to-txt (a-ledger-file a-argument)
   "Export accounting register data to txt, for the given period."
+  (format t "~aRemoving previous export data (~a)..." +g-termprefix+ (assemble-export-name a-argument ".txt"))
+  (remove-file-if-exists (assemble-export-name a-argument ".txt"))
+  (format t "~aDone.~%")
   (format t "~aExporting data to ~a...~%" +g-termprefix+ (assemble-export-name a-argument ".txt"))
   ; TODO: if a-argument in Q1-4 then call ledger with the appropriate dates.
   ; if a-argument in months then call ledger with -p? But what about the year?
@@ -49,21 +57,11 @@
       (sb-ext:run-program +g-ledger-cmd+
         (list "-f" a-ledger-file "-p \"" a-argument " this year\" reg | sort -n > "
           (assemble-export-name a-argument ".txt")) :output *standard-output*))
-    ; TODO: the below is how you use arguments. Implement that for creating the correct commands.
-    ;; test with sb-ext:run-program for win32
-    ;((member (intern a-argument) +g-quarters+)
-    ;  (sb-ext:run-program "C:\\Program Files (x86)\\Gow\\bin\\ls.exe"
-    ;    (list "-lh" "|" "grep" "ledger"
-    ;      ) :output (assemble-export-name a-argument ".txt")))
     ;; test with inferior-shell for win32
     ;((member (intern a-argument) +g-quarters+)
     ;  (inferior-shell:run/ss `(inferior-shell:pipe
     ;    ("C:\\Program Files (x86)\\Gow\\bin\\ls.exe" "-lh") (grep "ledger")))
     ;    :output (assemble-export-name a-argument ".txt"))
-    ; TODO: inferior-shell doesn't seem to work on FreeBSD. The below does work,
-    ; but what about the piping thing?
-    ; TODO: but the same problems exist with grep, |, etc. That's why I wanted to use
-    ; inferior-shell... dagnabbit!
     ((member (intern a-argument) +g-quarters+)
       (inferior-shell:run/ss `(inferior-shell:pipe
         ("/bin/ls" "-lh") (grep "ledger")))
