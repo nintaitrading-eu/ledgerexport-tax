@@ -39,34 +39,39 @@
 (defun remove-file-if-exists (a-file)
   "Checks if a file exists and if it does, it deletes it."
   (with-open-file (s a-file :direction :output :if-exists :error)
-    (delete-file s))
+    (delete-file s)))
+
+(defun print-done ()
+  "Write Done. to standard output."
+  (format t " Done.~%"))
 
 (defun export-to-txt (a-ledger-file a-argument)
   "Export accounting register data to txt, for the given period."
   (format t "~aRemoving previous export data (~a)..." +g-termprefix+ (assemble-export-name a-argument ".txt"))
   (remove-file-if-exists (assemble-export-name a-argument ".txt"))
-  (format t "~aDone.~%")
+  (print-done)
   (format t "~aExporting data to ~a...~%" +g-termprefix+ (assemble-export-name a-argument ".txt"))
   ; TODO: if a-argument in Q1-4 then call ledger with the appropriate dates.
   ; if a-argument in months then call ledger with -p? But what about the year?
   ; TODO: the below with (intern a-argument), only for the months.
   ; Also check if -p "january this year" is a valid PERIOD_EXPRESSION in ledger.
   ; TODO: check if output-file exists and ask for removal
+  ; TODO: implement file output in common-lisp directly:
+  ; (with-open-file (a-stream "output.txt" :direction :output :if-exists :error)
+  ;   (format a-stream (inferior-shell:run/ss `(inferior-shell:pipe (ls.exe) (grep ledger)))))
   (cond
     ((member (intern a-argument) +g-months+)
-      (sb-ext:run-program +g-ledger-cmd+
-        (list "-f" a-ledger-file "-p \"" a-argument " this year\" reg | sort -n > "
-          (assemble-export-name a-argument ".txt")) :output *standard-output*))
-    ;; test with inferior-shell for win32
-    ;((member (intern a-argument) +g-quarters+)
-    ;  (inferior-shell:run/ss `(inferior-shell:pipe
-    ;    ("C:\\Program Files (x86)\\Gow\\bin\\ls.exe" "-lh") (grep "ledger")))
-    ;    :output (assemble-export-name a-argument ".txt"))
+      (inferior-shell:run/ss `(inferior-shell:pipe
+        (ls.exe -lh) (grep ledger)) ; windows
+        ;("/bin/ls" "-lh") (grep "ledger")) ; FreeBSD
+        :output (assemble-export-name a-argument ".txt")))
     ((member (intern a-argument) +g-quarters+)
       (inferior-shell:run/ss `(inferior-shell:pipe
-        ("/bin/ls" "-lh") (grep "ledger")))
+        (ls.exe -lh) (grep ledger))) ; windows
+        ;("/bin/ls" "-lh") (grep "ledger")) ; FreeBSD
         :output (assemble-export-name a-argument ".txt"))
     (T (format t "Error: Unknown argument ~a... export failed!~%" a-argument)))
+  (print-done)
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
 )
 
