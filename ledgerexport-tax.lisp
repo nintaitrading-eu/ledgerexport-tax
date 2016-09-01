@@ -62,14 +62,16 @@
   (cond
     ((member (intern a-argument) +g-months+)
       (inferior-shell:run/ss `(inferior-shell:pipe
-        (ls.exe -lh) (grep ledger)) ; windows
-        ;("/bin/ls" "-lh") (grep "ledger")) ; FreeBSD
-        :output (assemble-export-name a-argument ".txt")))
+        ;(ls.exe -lh) (grep ledger)) ; windows
+        (/bin/ls -lh) (grep ledger))) ; FreeBSD
+      )
+        ;:output (assemble-export-name a-argument ".txt")))
     ((member (intern a-argument) +g-quarters+)
       (inferior-shell:run/ss `(inferior-shell:pipe
-        (ls.exe -lh) (grep ledger))) ; windows
-        ;("/bin/ls" "-lh") (grep "ledger")) ; FreeBSD
-        :output (assemble-export-name a-argument ".txt"))
+        ;(ls.exe -lh) (grep ledger))) ; windows
+        (/bin/ls -lh) (grep ledger))) ; FreeBSD
+      )
+        ;:output (assemble-export-name a-argument ".txt"))
     (T (format t "Error: Unknown argument ~a... export failed!~%" a-argument)))
   (print-done)
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
@@ -100,4 +102,7 @@ So that leaves 3 arguments to be checked for..."
     (T (usage))))
 
 ;;; Main entry point, to start the code.
+;; Note:
+;; For testing in sbcl:
+;; (setf sb-ext:*posix-argv* (list "sbcl" "/home/rockwolf/doc/ledger/ledger.dat" "Q1"))
 (main)
