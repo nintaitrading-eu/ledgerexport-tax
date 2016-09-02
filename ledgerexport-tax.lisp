@@ -62,10 +62,8 @@ given file."
   ; if a-argument in months then call ledger with -p? But what about the year?
   ; TODO: the below with (intern a-argument), only for the months.
   ; Also check if -p "january this year" is a valid PERIOD_EXPRESSION in ledger.
-  ; TODO: check if output-file exists and ask for removal
-  ; TODO: implement file output in common-lisp directly:
-  ; (with-open-file (a-stream "output.txt" :direction :output :if-exists :error)
-  ;   (format a-stream (inferior-shell:run/ss `(inferior-shell:pipe (ls.exe) (grep ledger)))))
+  ; TODO: ask for removal of output file
+  ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
   (cond
     ((member (intern a-argument) +g-months+)
     (export-to-txt-cmd
@@ -73,7 +71,6 @@ given file."
       `(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
       ;`(inferior-shell:pipe (/bin/ls -lh) (grep ledger))) ; FreeBSD
     )
-
     ((member (intern a-argument) +g-quarters+)
     (export-to-txt-cmd
       (assemble-export-name a-argument ".txt")
@@ -82,7 +79,6 @@ given file."
     )
     (T (format t "Error: Unknown argument ~a... export failed!~%" a-argument)))
   (print-done)
-  ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
 )
 
 (defun process-arguments (a-ledger-file a-argument)
