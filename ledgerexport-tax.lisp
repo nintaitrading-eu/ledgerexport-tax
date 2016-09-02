@@ -51,19 +51,37 @@ Otherwise, the program aborts it's operation with exit status 1"
       (a-with-dash (format nil "~4,'0d-~2,'0d-~2,'0d" yr mon day))
       (T (format nil "~4,'0d~2,'0d~2,'0d" yr mon day)))))
 
+(defun current-year-int ()
+  "Returns an integer, representing the current year."
+  (nth-value 5 (get-decoded-time)))
+  
+
 (defun print-done ()
   "Write <space>Done. to standard output."
   (format t " Done.~%"))
 
-;(defun get-begindate-from-quarter (a-quarter)
-;  (cond
-;    ((equal a-quarter 'Q1) (format nil "~4,'0d-~2,'0d-~2,'0d"  mon day))
-;    (T (format t "Error: unknown quarter ~a~%" a-quarter))
-;  ))
+(defun get-begindate-from-quarter (a-quarter)
+  "Get the start-date for a given quarter. The given quarter should be a symbol, e.g. 'Q1"
+  (cond
+    ((equal a-quarter 'Q1) (format nil "~4,'0d-~2,'0d-~2,'0d" (current-year-int) 1 1))
+    ((equal a-quarter 'Q2) (format nil "~4,'0d-~2,'0d-~2,'0d" (current-year-int) 4 1))
+    ((equal a-quarter 'Q3) (format nil "~4,'0d-~2,'0d-~2,'0d" (current-year-int) 7 1))
+    ((equal a-quarter 'Q4) (format nil "~4,'0d-~2,'0d-~2,'0d" (current-year-int) 10 1))
+    (T (format t "Error: unknown quarter ~a~%" a-quarter))
+  ))
 
-;(defun get-enddate-from-quarter (a-quarter)
-;  NIL
-;  )
+(defun get-enddate-from-quarter (a-quarter)
+  "Get the end-date for a given quarter. The given quarter should be a symbol, e.g. 'Q1"
+  ; Note: ledger is not inclusive, so we return the end-date of the quarter + 1.
+  ; e.g.: 'Q1 => 31st of March = enddate, but we return April 1st
+  ; Note the year change for Q4.
+  (cond
+    ((equal a-quarter 'Q1) (format nil "~4,'0d-~2,'0d-~2,'0d" (current-year-int) 4 1))
+    ((equal a-quarter 'Q2) (format nil "~4,'0d-~2,'0d-~2,'0d" (current-year-int) 7 1))
+    ((equal a-quarter 'Q3) (format nil "~4,'0d-~2,'0d-~2,'0d" (current-year-int) 10 1))
+    ((equal a-quarter 'Q4) (format nil "~4,'0d-~2,'0d-~2,'0d" (+ current-year-int 1) 1 1))
+    (T (format t "Error: unknown quarter ~a~%" a-quarter))
+  ))
 
 ;;; Application specific functions.
 (defun usage ()
@@ -115,6 +133,9 @@ given file."
     )
     (T (format t "Error: Unknown argument ~a... export failed!~%" a-argument)))
   (print-done)
+  ; TODO: use this to construct the commands
+  (format t "[DEBUG] begindate Q1 = ~a~%" (get-begindate-from-quarter 'Q1))
+  (format t "[DEBUG] enddate Q1 = ~a~%" (get-enddate-from-quarter 'Q1))
 )
 
 (defun process-arguments (a-ledger-file a-argument)
