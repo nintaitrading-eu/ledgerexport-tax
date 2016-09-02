@@ -45,6 +45,13 @@
   "Write Done. to standard output."
   (format t " Done.~%"))
 
+(defun export-to-txt-cmd (a-file a-command-pipe)
+  "Export accounting register data to txt. This executes the given
+inferior-shell command with pipe, while exporting the results to a
+given file."
+  (with-open-file (z-stream a-file :direction :output :if-exists :error)
+    (format z-stream (inferior-shell:run/ss a-command-pipe)))) 
+
 (defun export-to-txt (a-ledger-file a-argument)
   "Export accounting register data to txt, for the given period."
   (format t "~aRemoving previous export data (~a)..." +g-termprefix+ (assemble-export-name a-argument ".txt"))
@@ -61,17 +68,18 @@
   ;   (format a-stream (inferior-shell:run/ss `(inferior-shell:pipe (ls.exe) (grep ledger)))))
   (cond
     ((member (intern a-argument) +g-months+)
-      (inferior-shell:run/ss `(inferior-shell:pipe
-        ;(ls.exe -lh) (grep ledger)) ; windows
-        (/bin/ls -lh) (grep ledger))) ; FreeBSD
-      )
-        ;:output (assemble-export-name a-argument ".txt")))
+    (export-to-txt-cmd
+      (assemble-export-name a-argument ".txt")
+      `(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
+      ;`(inferior-shell:pipe (/bin/ls -lh) (grep ledger))) ; FreeBSD
+    )
+
     ((member (intern a-argument) +g-quarters+)
-      (inferior-shell:run/ss `(inferior-shell:pipe
-        ;(ls.exe -lh) (grep ledger))) ; windows
-        (/bin/ls -lh) (grep ledger))) ; FreeBSD
-      )
-        ;:output (assemble-export-name a-argument ".txt"))
+    (export-to-txt-cmd
+      (assemble-export-name a-argument ".txt")
+        `(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
+        ;`(inferior-shell:pipe (/bin/ls -lh) (grep ledger))) ; FreeBSD
+    )
     (T (format t "Error: Unknown argument ~a... export failed!~%" a-argument)))
   (print-done)
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
