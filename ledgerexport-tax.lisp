@@ -42,16 +42,28 @@ Otherwise, the program aborts it's operation with exit status 1"
               (format t "Aborted.~%")
               (terminate 1)))))))
 
-(defun current-date-string ()
+(defun current-date-string (&optional a-with-dash)
   "Returns the current date as a string in YYYYMMDD format."
   (multiple-value-bind (sec min hr day mon yr dow dst-p tz)
     (get-decoded-time)
     (declare (ignore sec min hr dow dst-p tz))
-    (format nil "~4,'0d~2,'0d~2,'0d" yr mon day)))
+    (cond
+      (a-with-dash (format nil "~4,'0d-~2,'0d-~2,'0d" yr mon day))
+      (T (format nil "~4,'0d~2,'0d~2,'0d" yr mon day)))))
 
 (defun print-done ()
   "Write <space>Done. to standard output."
   (format t " Done.~%"))
+
+;(defun get-begindate-from-quarter (a-quarter)
+;  (cond
+;    ((equal a-quarter 'Q1) (format nil "~4,'0d-~2,'0d-~2,'0d"  mon day))
+;    (T (format t "Error: unknown quarter ~a~%" a-quarter))
+;  ))
+
+;(defun get-enddate-from-quarter (a-quarter)
+;  NIL
+;  )
 
 ;;; Application specific functions.
 (defun usage ()
