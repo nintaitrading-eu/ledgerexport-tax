@@ -13,6 +13,45 @@
 (defconstant +g-termprefix+ ">>> ")
 (defconstant +g-ledger-cmd+ "ledger.cmd") ; TODO: change command on freebsd to just ledger.
 
+;;; Generic function
+(defun terminate (a-status)
+  "Exit program with exit status, but in a portable way."
+  #+sbcl     (sb-ext:quit      :unix-status a-status)    ; SBCL
+  #+ccl      (   ccl:quit      a-status)                 ; Clozure CL
+  #+clisp    (   ext:quit      a-status)                 ; GNU CLISP
+  #+cmu      (  unix:unix-exit a-status)                 ; CMUCL
+  #+abcl     (   ext:quit      :status a-status)         ; Armed Bear CL
+  #+allegro  (  excl:exit      a-status :quiet t)        ; Allegro CL
+  (cl-user::quit))           ; Many implementations put QUIT in the sandbox CL-USER package.
+
+(defun remove-file-if-exists (a-file)
+  "Remove a file, if it exists."
+  (with-open-file (z-stream a-file :direction :output :if-exists :supersede)
+    (delete-file z-stream)))
+
+(defun remove-file-or-abort (a-file)
+  "Checks if a file exists and if it does, it deletes it.
+Otherwise, the program aborts it's operation with exit status 1"
+  (format t "[DEBUG] remove-file-or-abort~%")
+  (if (probe-file a-file)
+    (progn
+      (format t "Warning: Output file \"~a\" exists.~%" a-file)
+      (cond ((y-or-n-p "Would you like to remove it and continue?") (remove-file-if-exists a-file))
+            ((progn
+              (format t "Aborted.~%")
+              (terminate 1)))))))
+
+(defun current-date-string ()
+  "Returns the current date as a string in YYYYMMDD format."
+  (multiple-value-bind (sec min hr day mon yr dow dst-p tz)
+    (get-decoded-time)
+    (declare (ignore sec min hr dow dst-p tz))
+    (format nil "~4,'0d~2,'0d~2,'0d" yr mon day)))
+
+(defun print-done ()
+  "Write <space>Done. to standard output."
+  (format t " Done.~%"))
+
 ;;; Functions.
 (defun usage ()
   "Print usage info."
@@ -24,26 +63,10 @@
   (format t "~8t june, july, august, september, oktober, november, december)~%")
   (format t "~4t-h: shows this usage info message~%"))
 
-(defun current-date-string ()
-  "Returns the current date as a string in YYYYMMDD format."
-  (multiple-value-bind (sec min hr day mon yr dow dst-p tz)
-    (get-decoded-time)
-    (declare (ignore sec min hr dow dst-p tz))
-    (format nil "~4,'0d~2,'0d~2,'0d" yr mon day)))
-
 (defun assemble-export-name (a-argument a-extension)
   "Determine name to use for the output."
   (concatenate 'string "reg_" (current-date-string) "_V001_btw_" (string-upcase a-argument) a-extension)
 )
-
-(defun remove-file-if-exists (a-file)
-  "Checks if a file exists and if it does, it deletes it."
-  (with-open-file (s a-file :direction :output :if-exists :error)
-    (delete-file s)))
-
-(defun print-done ()
-  "Write Done. to standard output."
-  (format t " Done.~%"))
 
 (defun export-to-txt-cmd (a-file a-command-pipe)
   "Export accounting register data to txt. This executes the given
@@ -54,8 +77,8 @@ given file."
 
 (defun export-to-txt (a-ledger-file a-argument)
   "Export accounting register data to txt, for the given period."
-  (format t "~aRemoving previous export data (~a)..." +g-termprefix+ (assemble-export-name a-argument ".txt"))
-  (remove-file-if-exists (assemble-export-name a-argument ".txt"))
+  (format t "~aRemoving previous export data \"~a\")..." +g-termprefix+ (assemble-export-name a-argument ".txt"))
+  (remove-file-or-abort (assemble-export-name a-argument ".txt"))
   (print-done)
   (format t "~aExporting data to ~a...~%" +g-termprefix+ (assemble-export-name a-argument ".txt"))
   ; TODO: if a-argument in Q1-4 then call ledger with the appropriate dates.
