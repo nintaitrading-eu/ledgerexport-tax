@@ -5,15 +5,17 @@
 ;;;; the final report outputs from txt to pdf.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; Packages.
-
 ;;; Global variables.
-(defconstant +g-months+ (list 'JANUARY 'FEBRUARY 'MARCH 'APRIL 'MAY 'JUNE 'JULY 'AUGUST 'SEPTEMBER 'OKTOBER 'NOVEMBER 'DECEMBER))
-(defconstant +g-quarters+ (list 'Q1 'Q2 'Q3 'Q4))
-(defconstant +g-termprefix+ ">>> ")
-(defconstant +g-ledger-cmd+ "ledger.cmd") ; TODO: change command on freebsd to just ledger.
+(defvar *g-months*
+  (list 'JANUARY 'FEBRUARY 'MARCH 'APRIL 'MAY 'JUNE 'JULY 'AUGUST 'SEPTEMBER 'OKTOBER 'NOVEMBER 'DECEMBER) "A list of all the months in a year.")
+(defvar *g-quarters*
+  (list 'Q1 'Q2 'Q3 'Q4) "A list of all the quarters in a year.")
+(defvar *g-termprefix*
+  ">>> " "String to be prepended to output, for a fancier effect.")
+(defvar *g-ledger-cmd*
+  "ledger.cmd" "The ledger command that is used to retrieve/export the accounting data.") ; TODO: change command on freebsd to just ledger.
 
-;;; Generic function
+;;; Generic functions.
 (defun terminate (a-status)
   "Exit program with exit status, but in a portable way."
   #+sbcl     (sb-ext:quit      :unix-status a-status)    ; SBCL
@@ -32,7 +34,6 @@
 (defun remove-file-or-abort (a-file)
   "Checks if a file exists and if it does, it deletes it.
 Otherwise, the program aborts it's operation with exit status 1"
-  (format t "[DEBUG] remove-file-or-abort~%")
   (if (probe-file a-file)
     (progn
       (format t "Warning: Output file \"~a\" exists.~%" a-file)
@@ -52,7 +53,7 @@ Otherwise, the program aborts it's operation with exit status 1"
   "Write <space>Done. to standard output."
   (format t " Done.~%"))
 
-;;; Functions.
+;;; Application specific functions.
 (defun usage ()
   "Print usage info."
   (format t "Usage: sbcl --noinform --script ledgerexport-tax.lisp \"path/to/ledger.dat\" [Q1|Q2|Q3|Q4|month|-h]~%~%")
@@ -77,10 +78,10 @@ given file."
 
 (defun export-to-txt (a-ledger-file a-argument)
   "Export accounting register data to txt, for the given period."
-  (format t "~aRemoving previous export data \"~a\")..." +g-termprefix+ (assemble-export-name a-argument ".txt"))
+  (format t "~aRemoving previous export data \"~a\")..." *g-termprefix* (assemble-export-name a-argument ".txt"))
   (remove-file-or-abort (assemble-export-name a-argument ".txt"))
   (print-done)
-  (format t "~aExporting data to ~a...~%" +g-termprefix+ (assemble-export-name a-argument ".txt"))
+  (format t "~aExporting data to ~a...~%" *g-termprefix* (assemble-export-name a-argument ".txt"))
   ; TODO: if a-argument in Q1-4 then call ledger with the appropriate dates.
   ; if a-argument in months then call ledger with -p? But what about the year?
   ; TODO: the below with (intern a-argument), only for the months.
@@ -88,13 +89,13 @@ given file."
   ; TODO: ask for removal of output file
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
   (cond
-    ((member (intern a-argument) +g-months+)
+    ((member (intern a-argument) *g-months*)
     (export-to-txt-cmd
       (assemble-export-name a-argument ".txt")
       `(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
       ;`(inferior-shell:pipe (/bin/ls -lh) (grep ledger))) ; FreeBSD
     )
-    ((member (intern a-argument) +g-quarters+)
+    ((member (intern a-argument) *g-quarters*)
     (export-to-txt-cmd
       (assemble-export-name a-argument ".txt")
         `(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
@@ -111,8 +112,8 @@ given file."
     ; Note: (intern ...) = string->symbol
     ((not (probe-file a-ledger-file)) (format t "Error: ~a does not exist...~%" a-ledger-file))
     ((or
-      (member (intern a-argument) +g-quarters+)
-      (member (intern a-argument) +g-months+))
+      (member (intern a-argument) *g-quarters*)
+      (member (intern a-argument) *g-months*))
         (export-to-txt a-ledger-file a-argument))
     (T (usage))))
 
@@ -130,6 +131,6 @@ So that leaves 3 arguments to be checked for..."
 
 ;;; Main entry point, to start the code.
 ;; Note:
-;; For testing in sbcl:
+;; For testing cli parameters in sbcl:
 ;; (setf sb-ext:*posix-argv* (list "sbcl" "/home/rockwolf/doc/ledger/ledger.dat" "Q1"))
 (main)
