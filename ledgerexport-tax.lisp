@@ -12,8 +12,10 @@
   (list 'Q1 'Q2 'Q3 'Q4) "A list of all the quarters in a year.")
 (defvar *g-termprefix*
   ">>> " "String to be prepended to output, for a fancier effect.")
+;(defvar *g-ledger-cmd*
+;  "ledger.cmd" "The ledger command that is used to retrieve/export the accounting data.") ; windows
 (defvar *g-ledger-cmd*
-  "ledger.cmd" "The ledger command that is used to retrieve/export the accounting data.") ; TODO: change command on freebsd to just ledger.
+  "/usr/local/bin/ledger" "The ledger command that is used to retrieve/export the accounting data.") ; FreeBSD
 
 ;;; Generic functions.
 (defun terminate (a-status)
@@ -96,7 +98,7 @@ Otherwise, the program aborts it's operation with exit status 1"
 
 (defun assemble-export-name (a-argument a-extension)
   "Determine name to use for the output."
-  (concatenate 'string "reg_" (current-date-string) "_V001_btw_" (string-upcase a-argument) a-extension)
+  (concatenate 'string "reg_" (current-date-string) "_V001_btw_" (string-upcase (string a-argument)) a-extension)
 )
 
 (defun export-to-txt-cmd (a-file a-command-pipe)
@@ -108,7 +110,7 @@ given file."
 
 (defun export-to-txt (a-ledger-file a-argument)
   "Export accounting register data to txt, for the given period."
-  (format t "~aRemoving previous export data \"~a\")..." *g-termprefix* (assemble-export-name a-argument ".txt"))
+  (format t "~aRemoving previous export data \"~a\"..." *g-termprefix* (assemble-export-name a-argument ".txt"))
   (remove-file-or-abort (assemble-export-name a-argument ".txt"))
   (print-done)
   (format t "~aExporting data to ~a...~%" *g-termprefix* (assemble-export-name a-argument ".txt"))
@@ -119,35 +121,37 @@ given file."
   ; TODO: ask for removal of output file
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
   (cond
-    ((member (intern a-argument) *g-months*)
+    ((member a-argument *g-months*)
     (export-to-txt-cmd
       (assemble-export-name a-argument ".txt")
-      `(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
-      ;`(inferior-shell:pipe (/bin/ls -lh) (grep ledger))) ; FreeBSD
+      (format t "~aExecuting command ~a -p ~a reg | sort -n" *g-termprefix* *g-ledger-cmd* (concatenate 'string (string a-argument) " " (write-to-string (current-year-int))))
+      ;`(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
+      `(inferior-shell:pipe (*g-ledger-cmd* -p '(concatenate 'string "\"" (string a-argument) " " (write-to-string (current-year-int)) "\"") reg) (sort -n))) ; FreeBSD
     )
-    ((member (intern a-argument) *g-quarters*)
+    ((member a-argument *g-quarters*)
     (export-to-txt-cmd
       (assemble-export-name a-argument ".txt")
-        `(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
-        ;`(inferior-shell:pipe (/bin/ls -lh) (grep ledger))) ; FreeBSD
+      ;(format t "~aExecuting command ~a -p ~a reg | sort -n" *g-ledger-cmd* (concatenate 'string (string a-argument) " " (write-to-string current-year-int)))
+        ;`(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
+        `(inferior-shell:pipe (/bin/ls -lh) (grep ledger))) ; FreeBSD
     )
-    (T (format t "Error: Unknown argument ~a... export failed!~%" a-argument)))
+    (T (format t "~%Error: Unknown argument ~a... export failed!~%" (string a-argument))))
   (print-done)
   ; TODO: use this to construct the commands
   (format t "[DEBUG] begindate Q1 = ~a~%" (get-begindate-from-quarter 'Q1))
   (format t "[DEBUG] enddate Q1 = ~a~%" (get-enddate-from-quarter 'Q1))
 )
 
-(defun process-arguments (a-ledger-file a-argument)
+(defun process-arguments (a-ledger-file-str a-argument-str)
   "Print usage info or start export for a valid given period."
   (cond
-    ((equal a-argument "-h") (usage))
+    ((equal a-argument-str "-h") (usage))
     ; Note: (intern ...) = string->symbol
-    ((not (probe-file a-ledger-file)) (format t "Error: ~a does not exist...~%" a-ledger-file))
+    ((not (probe-file a-ledger-file-str)) (format t "Error: ~a does not exist...~%" a-ledger-file-str))
     ((or
-      (member (intern a-argument) *g-quarters*)
-      (member (intern a-argument) *g-months*))
-        (export-to-txt a-ledger-file a-argument))
+      (member (intern a-argument-str) *g-quarters*)
+      (member (intern a-argument-str) *g-months*))
+        (export-to-txt a-ledger-file-str (intern a-argument-str)))
     (T (usage))))
 
 (defun main ()
@@ -165,5 +169,7 @@ So that leaves 3 arguments to be checked for..."
 ;;; Main entry point, to start the code.
 ;; Note:
 ;; For testing cli parameters in sbcl:
+;; (ql:quickload 'ledgerexport-tax)
 ;; (setf sb-ext:*posix-argv* (list "sbcl" "/home/rockwolf/doc/ledger/ledger.dat" "Q1"))
+;; (setf sb-ext:*posix-argv* (list "sbcl" "/home/rockwolf/doc/ledger/ledger.dat" "january"))
 (main)
