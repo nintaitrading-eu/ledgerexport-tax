@@ -122,19 +122,21 @@ given file."
   ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
   (cond
     ((member a-argument *g-months*)
-    (export-to-txt-cmd
-      (assemble-export-name a-argument ".txt")
-      (format t "~aExecuting command ~a -p ~a reg | sort -n" *g-termprefix* *g-ledger-cmd* (concatenate 'string (string a-argument) " " (write-to-string (current-year-int))))
-      ;`(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
-      `(inferior-shell:pipe (*g-ledger-cmd* -p '(concatenate 'string "\"" (string a-argument) " " (write-to-string (current-year-int)) "\"") reg) (sort -n))) ; FreeBSD
-    )
-    ((member a-argument *g-quarters*)
-    (export-to-txt-cmd
-      (assemble-export-name a-argument ".txt")
-      ;(format t "~aExecuting command ~a -p ~a reg | sort -n" *g-ledger-cmd* (concatenate 'string (string a-argument) " " (write-to-string current-year-int)))
+    (progn
+      (format t "~aExecuting command -f ~a ~a -p ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (concatenate 'string "\"" (string a-argument) " " (write-to-string (current-year-int)) "\""))
+      (export-to-txt-cmd
+        (assemble-export-name a-argument ".txt")
         ;`(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
-        `(inferior-shell:pipe (/bin/ls -lh) (grep ledger))) ; FreeBSD
-    )
+        `(inferior-shell:pipe (*g-ledger-cmd* -f a-ledger-file -p (concatenate 'string "\"" (string a-argument) " " (write-to-string (current-year-int)) "\"") reg) (sort -n))) ; FreeBSD
+    ))
+    ((member a-argument *g-quarters*)
+    (progn
+        ;(format t "~aExecuting command ~a -f ~a -p ~a reg | sort -n..." *g-ledger-cmd* a-ledger-file (concatenate 'string (string a-argument) " " (write-to-string current-year-int)))
+        (export-to-txt-cmd
+            (assemble-export-name a-argument ".txt")
+            ;`(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
+            `(inferior-shell:pipe (/bin/ls -lh) (grep ledger))) ; FreeBSD
+    ))
     (T (format t "~%Error: Unknown argument ~a... export failed!~%" (string a-argument))))
   (print-done)
   ; TODO: use this to construct the commands
