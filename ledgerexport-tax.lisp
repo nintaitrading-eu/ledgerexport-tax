@@ -123,11 +123,12 @@ given file."
   (cond
     ((member a-argument *g-months*)
     (progn
-      (format t "~aExecuting command -f ~a ~a -p ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (concatenate 'string "\"" (string a-argument) " " (write-to-string (current-year-int)) "\""))
+      (format t "~aExecuting command ~a -f ~a -p ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (concatenate 'string "\"" (string a-argument) " " (write-to-string (current-year-int)) "\""))
       (export-to-txt-cmd
         (assemble-export-name a-argument ".txt")
         ;`(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
-        `(inferior-shell:pipe (*g-ledger-cmd* -f a-ledger-file -p (concatenate 'string "\"" (string a-argument) " " (write-to-string (current-year-int)) "\"") reg) (sort -n))) ; FreeBSD
+        ;`(inferior-shell:pipe (*g-ledger-cmd* -f a-ledger-file -p (concatenate 'string (string a-argument) " " (write-to-string (current-year-int))) reg) (sort -n))) ; FreeBSD
+        `(inferior-shell:pipe (/usr/local/bin/ledger -f /home/rockwolf/doc/ledger/ledger.dat reg) (sort -n))) ; FreeBSD
     ))
     ((member a-argument *g-quarters*)
     (progn
@@ -136,6 +137,7 @@ given file."
             (assemble-export-name a-argument ".txt")
             ;`(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
             `(inferior-shell:pipe (/bin/ls -lh) (grep ledger))) ; FreeBSD
+            ;`(inferior-shell:pipe (*g-ledger-cmd* -f a-ledger-file ..) (grep ledger))) ; FreeBSD
     ))
     (T (format t "~%Error: Unknown argument ~a... export failed!~%" (string a-argument))))
   (print-done)
