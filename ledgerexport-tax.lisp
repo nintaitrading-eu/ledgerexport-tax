@@ -127,7 +127,7 @@ given file."
       (export-to-txt-cmd
         (assemble-export-name a-argument ".txt")
         ;`(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
-        `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -p (concatenate 'string (string ,a-argument) " " (write-to-string (,current-year-int))) reg) (sort -n))) ; FreeBSD
+        `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -p (concatenate 'string (string ,a-argument) " " (write-to-string ,(current-year-int))) reg) (sort -n))) ; FreeBSD
         ;`(inferior-shell:pipe (/usr/local/bin/ledger -f /home/rockwolf/doc/ledger/ledger.dat reg) (sort -n))) ; FreeBSD
     ))
     ((member a-argument *g-quarters*)
