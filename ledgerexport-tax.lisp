@@ -127,12 +127,11 @@ given file."
       (export-to-txt-cmd
         (assemble-export-name a-argument ".txt")
         ;`(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
-        ;`(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -p (concatenate 'string "\"" (string ,a-argument) " " (write-to-string ,(current-year-int)) "\"") reg) (sort -n))) ; FreeBSD
         `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -p ,(concatenate 'string (string a-argument) " " (write-to-string (current-year-int))) reg) (sort -n))) ; FreeBSD
     ))
     ((member a-argument *g-quarters*)
     (progn
-      (format t "~aExecuting command ~a -f ~a -b ~a -e ~a reg | sort -n..." *g-ledger-cmd* a-ledger-file (get-begindate-from-quarter a-argument) (get-enddate-from-quarter a-argument))
+      (format t "~aExecuting command ~a -f ~a -b ~a -e ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (get-begindate-from-quarter a-argument) (get-enddate-from-quarter a-argument))
       (export-to-txt-cmd
         (assemble-export-name a-argument ".txt")
         ;`(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
@@ -140,9 +139,6 @@ given file."
     ))
     (T (format t "~%Error: Unknown argument ~a... export failed!~%" (string a-argument))))
   (print-done)
-  ; TODO: use this to construct the commands
-  (format t "[DEBUG] begindate Q1 = ~a~%" (get-begindate-from-quarter 'Q1))
-  (format t "[DEBUG] enddate Q1 = ~a~%" (get-enddate-from-quarter 'Q1))
 )
 
 (defun process-arguments (a-ledger-file-str a-argument-str)
@@ -162,8 +158,6 @@ given file."
 Note: sbcl --noinform --script ledger.dat Q1
 That makes for 5 arguments. But sbcl --noinform --script counts as 1 whole.
 So that leaves 3 arguments to be checked for..."
-  ; TODO: add extra code, that calls process-arguments for JANUARY/FEBRUARI/MARCH,
-  ; when called with Q1. Do the same logic for Q2-4.
   (cond
     ((eq (length sb-ext:*posix-argv*) 3)
       (process-arguments (nth 1 sb-ext:*posix-argv*) (string-upcase (nth 2 sb-ext:*posix-argv*))))
