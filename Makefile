@@ -12,9 +12,10 @@
 include config.mk
 
 SRC = ledgerexport-tax.lisp ledgerexport-tax.asd package.lisp
+MANIFEST = quicklisp-manifest.txt
 TARGET = ledgerexport-tax
 CL = sbcl
-# OPTS = 
+# OPTS =
 
 all: options ${TARGET}
 
@@ -22,16 +23,18 @@ options:
 	@echo ledgerexport-tax build options:
 	@echo --entry main --output ${TARGET}
 
-$(TARGET): 
+$(TARGET):
 	@echo Creating asdf-manifest file...
-#@${CL} --no-userinit --no-sysinit --non-interactive --eval '(ql:quickload "${TARGET}")' --entry main --output ${TARGET} 
+	@echo ${CL} --no-sysinit --non-interactive --eval '(ql:quickload "${TARGET}")' --eval ('ql:write-asdf-manifest-file "quicklisp-manifest.txt")'
+	@${CL} --non-interactive --eval '(ql:quickload "${TARGET}")' --eval ('ql:write-asdf-manifest-file "quicklisp-manifest.txt")'
 	@echo Building executable with buildapp...
 	@${CC} --manifest-file quicklisp-manifest.txt --load-system ${TARGET} --output ${TARGET}
 
 clean:
 	@echo cleaning...
-	@rm -fv ${TARGET} ${TARGET}-${VERSION}.tar.gz
-	
+	@echo rm -fv ${TARGET} ${TARGET}-${VERSION}.tar.gz ${MANIFEST}
+	@rm -fv ${TARGET} ${TARGET}-${VERSION}.tar.gz ${MANIFEST}
+
 dist: clean
 	@echo creating dist tarball
 	@mkdir -p ${TARGET}-${VERSION}
@@ -53,11 +56,11 @@ install: all
 	@mkdir -p ${DESTDIR}${MANPREFIX}/man1
 	@sed "s/VERSION/${VERSION}/g" < ${TARGET}.1 > ${DESTDIR}${MANPREFIX}/man1/${TARGET}.1
 	@chmod 644 ${DESTDIR}${MANPREFIX}/man1/${TARGET}.1
-	
+
 uninstall:
 	@echo removing application from ${DESTDIR}${PREFIX}/bin
 	@rm -f ${DESTDIR}${PREFIX}/bin/${TARGET}
 	@echo removing manual page from ${DESTDIR}${MANPREFIX}/man1
 	@rm -f ${DESTDIR}${MANPREFIX}/man1/${TARGET}.1
-	
+
 .PHONY: all options clean dist install uninstall
