@@ -1,0 +1,38 @@
+= LEDGEREXPORT-TAX(1)
+:doctype: manpage
+
+== NAME
+ledgerexport-tax - an application, written in Common Lisp for exporting data from ledger 3.0, for accounting purposes.
+
+== SYNOPSIS
+Installed version: ledgerexport-tax-VERSION +
+
+Installed as: *ledgerexport-tax*
+
+== DEPENDS ON
+Needs Common Lisp to build. SBCL is preferred.
+
+== DESCRIPTION
+ledgerexport-tax is an application, that can export register data from ledger 3.0 files, to be used for accounting purposes.
+It makes it easier to export the correct data for each quarter.
+
+== EXPORTS
+
+*Q1, Q2, Q3, Q4* +
+Exports the data for Q1, as an overview of the reg data for the entire quarter. It also exports the data per month, for each month in the given quarter. So a total of 4 files are exported.
+
+*monthname* +
+Generates an export of the reg data, for the given month.
+
+== USAGE
+ledgerexport-tax [Q1|Q2|Q3|Q4|monthname]
+
+== SEE ALSO
+This application stands on it's own and is not related to other man pages.
+
+== BUGS
+N/A
+
+== EXAMPLES
+ledgerexport-tax Q1 +
+tax_<yyyymmdd>_V001_Q1_reg.txt

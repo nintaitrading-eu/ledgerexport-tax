@@ -11,7 +11,7 @@
 
 include config.mk
 
-SRC = ledgerexport-tax.lisp ledgerexport-tax.asd
+SRC = ledgerexport-tax.lisp ledgerexport-tax.asd package.lisp
 TARGET = ledgerexport-tax
 # OPTS = 
 
@@ -19,7 +19,7 @@ all: options ${TARGET}
 
 options:
 	@echo ledgerexport-tax build options:
-	@echo "       = "
+	@echo "--entry main"
 	
 $(TARGET): 
 	@echo ${CC} --entry main --output ${TARGET}
@@ -32,17 +32,17 @@ clean:
 dist: clean
 	@echo creating dist tarball
 	@mkdir -p ${TARGET}-${VERSION}
-	@cp -R LICENSE.txt Makefile README.adoc \
-		${TARGET}.1 ${SRC} unit_test/ ${TARGET}-${VERSION}
+	@cp -R LICENSE.txt Makefile config.mk README.adoc \
+		${TARGET}.1 ${SRC} ${TARGET}-${VERSION}
 	@tar -cf ${TARGET}-${VERSION}.tar ${TARGET}-${VERSION}
 	@gzip ${TARGET}-${VERSION}.tar
 	@rm -rf ${TARGET}-${VERSION}
 
 install: all
-	@echo installing library to ${DESTDIR}${PREFIX}/lib
-	@mkdir -p ${DESTDIR}${PREFIX}/lib
-	@cp -f ${TARGET}.so ${DESTDIR}${PREFIX}/lib
-	@chmod 755 ${DESTDIR}${PREFIX}/lib/${TARGET}.so
+	@echo installing application to ${DESTDIR}${PREFIX}/bin
+	@mkdir -p ${DESTDIR}${PREFIX}/bin
+	@cp -f ${TARGET} ${DESTDIR}${PREFIX}/bin
+	@chmod 755 ${DESTDIR}${PREFIX}/bin/${TARGET}
 	@echo Generating man page, using asciidoc:
 	@echo a2x --doctype=manpage --format=manpage ${TARGET}.1.adoc
 	@a2x --doctype=manpage --format=manpage ${TARGET}.1.adoc
@@ -52,8 +52,8 @@ install: all
 	@chmod 644 ${DESTDIR}${MANPREFIX}/man1/${TARGET}.1
 	
 uninstall:
-	@echo removing library from ${DESTDIR}${PREFIX}/lib
-	@rm -f ${DESTDIR}${PREFIX}/lib/${TARGET}.so
+	@echo removing application from ${DESTDIR}${PREFIX}/bin
+	@rm -f ${DESTDIR}${PREFIX}/bin/${TARGET}
 	@echo removing manual page from ${DESTDIR}${MANPREFIX}/man1
 	@rm -f ${DESTDIR}${MANPREFIX}/man1/${TARGET}.1
 	
