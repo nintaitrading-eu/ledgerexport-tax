@@ -13,18 +13,21 @@ include config.mk
 
 SRC = ledgerexport-tax.lisp ledgerexport-tax.asd package.lisp
 TARGET = ledgerexport-tax
+CL = sbcl
 # OPTS = 
 
 all: options ${TARGET}
 
 options:
 	@echo ledgerexport-tax build options:
-	@echo "--entry main"
-	
+	@echo --entry main --output ${TARGET}
+
 $(TARGET): 
-	@echo ${CC} --entry main --output ${TARGET}
-	@${CC} --entry main --output ${TARGET} 
-   
+	@echo Creating asdf-manifest file...
+#@${CL} --no-userinit --no-sysinit --non-interactive --eval '(ql:quickload "${TARGET}")' --entry main --output ${TARGET} 
+	@echo Building executable with buildapp...
+	@${CC} --manifest-file quicklisp-manifest.txt --load-system ${TARGET} --output ${TARGET}
+
 clean:
 	@echo cleaning...
 	@rm -fv ${TARGET} ${TARGET}-${VERSION}.tar.gz
