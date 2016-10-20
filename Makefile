@@ -12,23 +12,19 @@
 include config.mk
 
 SRC = ledgerexport-tax.lisp ledgerexport-tax.asd package.lisp
-MANIFEST = quicklisp-manifest.txt
 TARGET = ledgerexport-tax
-CL = sbcl
-# OPTS =
+BUILDOPTS = --noinform --eval '(ql:quickload "${TARGET}")' --eval '(sb-ext:save-lisp-and-die "${TARGET}" :toplevel \#'\''main :executable t)'
 
 all: options ${TARGET}
 
 options:
 	@echo ledgerexport-tax build options:
-	@echo --entry main --output ${TARGET}
+	@echo ${BUILDOPTS}
 
 $(TARGET):
-	@echo Creating asdf-manifest file...
-	@echo ${CL} --no-sysinit --non-interactive --eval '(ql:quickload "${TARGET}")' --eval ('ql:write-asdf-manifest-file "quicklisp-manifest.txt")'
-	@${CL} --non-interactive --eval '(ql:quickload "${TARGET}")' --eval ('ql:write-asdf-manifest-file "quicklisp-manifest.txt")'
 	@echo Building executable with buildapp...
-	@${CC} --manifest-file quicklisp-manifest.txt --load-system ${TARGET} --output ${TARGET}
+	@echo ${CL} ${BUILDOPTS}
+	@${CL} ${BUILDOPTS}
 
 clean:
 	@echo cleaning...

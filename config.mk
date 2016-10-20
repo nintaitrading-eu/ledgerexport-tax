@@ -10,5 +10,6 @@ MANPREFIX = ${PREFIX}/man
 INCLUDE = /usr/src/include
 SHARE = ${PREFIX}/share
 
-# compiler and linker
+# cl-implementation, compiler and linker
+CL = sbcl
 CC = buildapp
