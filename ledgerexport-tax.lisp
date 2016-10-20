@@ -133,21 +133,21 @@ given file."
   (print-done)
 )
 
-(defun export-quarter (a-ledger-file a-month)
+(defun export-month (a-ledger-file a-month)
   "Export accounting register data to txt, for the given month."
-  (format t "~aExecuting command ~a -f ~a -p ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (concatenate 'string "\"" (string a-argument) " " (write-to-string (current-year-int)) "\""))
+  (format t "~aExecuting command ~a -f ~a -p ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (concatenate 'string "\"" (string a-month) " " (write-to-string (current-year-int)) "\""))
   (export-to-txt-cmd
-    (assemble-export-name a-argument ".txt")
-    `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -p ,(concatenate 'string (string a-argument) " " (write-to-string (current-year-int))) reg) (sort -n)))
+    (assemble-export-name a-month ".txt")
+    `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -p ,(concatenate 'string (string a-month) " " (write-to-string (current-year-int))) reg) (sort -n)))
 )
 
 (defun export-quarter (a-ledger-file a-quarter)
   "Export accounting register data to several txt files, for the given quarter and also each month in the quarter."
   ; Everything from Qn
-  (format t "~aExecuting command ~a -f ~a -b ~a -e ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (get-begindate-from-quarter a-argument) (get-enddate-from-quarter a-argument))
+  (format t "~aExecuting command ~a -f ~a -b ~a -e ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (get-begindate-from-quarter a-quarter) (get-enddate-from-quarter a-quarter))
   (export-to-txt-cmd
-    (assemble-export-name a-argument ".txt")
-    `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -b ,(get-begindate-from-quarter a-argument) -e ,(get-enddate-from-quarter a-argument) reg) (sort -n)))
+    (assemble-export-name a-quarter ".txt")
+    `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -b ,(get-begindate-from-quarter a-quarter) -e ,(get-enddate-from-quarter a-quarter) reg) (sort -n)))
   ; Everything from the 1st month of Qn
   (export-month a-ledger-file (get-month-1-from-quarter a-quarter))
   ; Everything from the 2nd month of Qn
@@ -158,17 +158,17 @@ given file."
 
 (defun get-month-1-from-quarter (a-quarter)
   "Get the first month symbol, from a given quarter symbol."
-  (JANUARY) ; TODO: get the correct month
+  (nth 0 *g-months*) ; TODO: get the correct month
 )
 
-(defun get-month-1-from-quarter (a-quarter)
+(defun get-month-2-from-quarter (a-quarter)
   "Get the second month symbol, from a given quarter symbol."
-  (FEBRUARY) ; TODO: get the correct month
+  (nth 1 *g-months*) ; TODO: get the correct month
 )
 
-(defun get-month-1-from-quarter (a-quarter)
+(defun get-month-3-from-quarter (a-quarter)
   "Get the third month symbol, from a given quarter symbol."
-  (MARCH) ; TODO: get the correct month
+  (nth 2 *g-months*) ; TODO: get the correct month
 )
 
 (defun process-arguments (a-ledger-file-str a-argument-str)
