@@ -20,7 +20,7 @@
 ;;; Generic functions.
 (defun terminate (a-status)
   "Exit program with exit status, but in a portable way."
-  #+sbcl     (sb-ext:quit      :unix-status a-status)    ; SBCL
+  #+sbcl     (sb-ext:exit      :unix-status a-status)    ; SBCL
   #+ccl      (   ccl:quit      a-status)                 ; Clozure CL
   #+clisp    (   ext:quit      a-status)                 ; GNU CLISP
   #+cmu      (  unix:unix-exit a-status)                 ; CMUCL
@@ -123,22 +123,52 @@ given file."
   (cond
     ((member a-argument *g-months*)
     (progn
-      (format t "~aExecuting command ~a -f ~a -p ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (concatenate 'string "\"" (string a-argument) " " (write-to-string (current-year-int)) "\""))
-      (export-to-txt-cmd
-        (assemble-export-name a-argument ".txt")
-        ;`(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
-        `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -p ,(concatenate 'string (string a-argument) " " (write-to-string (current-year-int))) reg) (sort -n))) ; FreeBSD
+      (export-month a-ledger-file a-argument)
     ))
     ((member a-argument *g-quarters*)
     (progn
-      (format t "~aExecuting command ~a -f ~a -b ~a -e ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (get-begindate-from-quarter a-argument) (get-enddate-from-quarter a-argument))
-      (export-to-txt-cmd
-        (assemble-export-name a-argument ".txt")
-        ;`(inferior-shell:pipe (ls.exe -lh) (grep ledger))) ; windows
-        `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -b ,(get-begindate-from-quarter a-argument) -e ,(get-enddate-from-quarter a-argument) reg) (sort -n))) ; FreeBSD
+      (export-quarter a-ledger-file a-argument)
     ))
     (T (format t "~%Error: Unknown argument ~a... export failed!~%" (string a-argument))))
   (print-done)
+)
+
+(defun export-quarter (a-ledger-file a-month)
+  "Export accounting register data to txt, for the given month."
+  (format t "~aExecuting command ~a -f ~a -p ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (concatenate 'string "\"" (string a-argument) " " (write-to-string (current-year-int)) "\""))
+  (export-to-txt-cmd
+    (assemble-export-name a-argument ".txt")
+    `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -p ,(concatenate 'string (string a-argument) " " (write-to-string (current-year-int))) reg) (sort -n)))
+)
+
+(defun export-quarter (a-ledger-file a-quarter)
+  "Export accounting register data to several txt files, for the given quarter and also each month in the quarter."
+  ; Everything from Qn
+  (format t "~aExecuting command ~a -f ~a -b ~a -e ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (get-begindate-from-quarter a-argument) (get-enddate-from-quarter a-argument))
+  (export-to-txt-cmd
+    (assemble-export-name a-argument ".txt")
+    `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -b ,(get-begindate-from-quarter a-argument) -e ,(get-enddate-from-quarter a-argument) reg) (sort -n)))
+  ; Everything from the 1st month of Qn
+  (export-month a-ledger-file (get-month-1-from-quarter a-quarter))
+  ; Everything from the 2nd month of Qn
+  (export-month a-ledger-file (get-month-2-from-quarter a-quarter))
+  ; Everything from the 3rd month of Qn
+  (export-month a-ledger-file (get-month-3-from-quarter a-quarter))
+)
+
+(defun get-month-1-from-quarter (a-quarter)
+  "Get the first month symbol, from a given quarter symbol."
+  (JANUARY) ; TODO: get the correct month
+)
+
+(defun get-month-1-from-quarter (a-quarter)
+  "Get the second month symbol, from a given quarter symbol."
+  (FEBRUARY) ; TODO: get the correct month
+)
+
+(defun get-month-1-from-quarter (a-quarter)
+  "Get the third month symbol, from a given quarter symbol."
+  (MARCH) ; TODO: get the correct month
 )
 
 (defun process-arguments (a-ledger-file-str a-argument-str)
