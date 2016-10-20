@@ -88,7 +88,7 @@ Otherwise, the program aborts it's operation with exit status 1"
 ;;; Application specific functions.
 (defun usage ()
   "Print usage info."
-  (format t "Usage: sbcl --noinform --script ledgerexport-tax.lisp \"path/to/ledger.dat\" [Q1|Q2|Q3|Q4|month|-h]~%~%")
+  (format t "Usage: ledgerexport-tax \"path/to/ledger.dat\" [Q1|Q2|Q3|Q4|month|-h]~%~%")
   (format t "Options:~%")
   (format t "~{~4tQ~a: exports the data for Q~a~%~}" (list 1 1 2 2 3 3 4 4))
   (format t "~4tmonth: exports the given month~%")
