@@ -1,8 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; ledgerexport-tax.lisp:
 ;;;; Script that prepares data for the quarterly tax reports.
-;;;; It uses ledger data as a backend and also depends on vim for transforming
-;;;; the final report outputs from txt to pdf.
+;;;; It uses ledger data as a backend.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; Global variables.
@@ -12,8 +11,6 @@
   (list 'Q1 'Q2 'Q3 'Q4) "A list of all the quarters in a year.")
 (defvar *g-termprefix*
   ">>> " "String to be prepended to output, for a fancier effect.")
-;(defvar *g-ledger-cmd*
-;  "ledger.cmd" "The ledger command that is used to retrieve/export the accounting data.") ; windows
 (defvar *g-ledger-cmd*
   "/usr/local/bin/ledger" "The ledger command that is used to retrieve/export the accounting data.") ; FreeBSD
 
@@ -113,12 +110,6 @@ given file."
   (remove-file-or-abort (assemble-export-name a-argument ".txt"))
   (print-done)
   (format t "~aExporting data to ~a...~%" *g-termprefix* (assemble-export-name a-argument ".txt"))
-  ; TODO: if a-argument in Q1-4 then call ledger with the appropriate dates.
-  ; if a-argument in months then call ledger with -p? But what about the year?
-  ; TODO: the below with (intern a-argument), only for the months.
-  ; Also check if -p "january this year" is a valid PERIOD_EXPRESSION in ledger.
-  ; TODO: ask for removal of output file
-  ;ledger -f ledger.dat -b "2016/06/01" -e "2016/07/01" reg | sort -n > reg_(date +%Y%m%d)_V001_btw_Q1
   (cond
     ((member a-argument *g-months*)
     (progn
