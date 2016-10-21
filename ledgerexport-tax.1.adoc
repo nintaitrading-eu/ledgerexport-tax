@@ -24,6 +24,19 @@ Exports the data for Q1, as an overview of the reg data for the entire quarter. 
 *monthname* +
 Generates an export of the reg data, for the given month.
 
+*outputfile names for Q1-3* +
+The output filenames are of the format reg_<date>_V001_btw_Q1.txt. +
+The output filenames are of the format reg_<date>_V001_btw_JANUARY.txt. +
+The output filenames are of the format reg_<date>_V001_btw_FEBRUARY.txt. +
+The output filenames are of the format reg_<date>_V001_btw_MARCH.txt. +
+The output filenames are of the format reg_<date>_V001_btw_Q2.txt. +
+The output filenames are of the format reg_<date>_V001_btw_APRIL.txt. +
+...
+
+*outputfile names for monthname* +
+The output filenames are of the format reg_<date>_V001_btw_<monthname>.txt. +
+e.g.: reg_<date>_V001_btw_<monthname>.txt
+
 == USAGE
 ledgerexport-tax [Q1|Q2|Q3|Q4|monthname]
 
@@ -35,4 +48,10 @@ N/A
 
 == EXAMPLES
 ledgerexport-tax Q1 +
-tax_<yyyymmdd>_V001_Q1_reg.txt
+reg_<yyyymmdd>_V001_btw_Q1.txt +
+reg_<yyyymmdd>_V001_btw_JANUARY.txt +
+reg_<yyyymmdd>_V001_btw_FEBRUARY.txt +
+reg_<yyyymmdd>_V001_btw_MARCH.txt +
+
+ledgerexport-tax september +
+reg_<yyyymmdd>_V001_btw_SEPTEMBER.txt +

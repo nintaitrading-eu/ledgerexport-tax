@@ -56,7 +56,6 @@ Otherwise, the program aborts it's operation with exit status 1"
 (defun current-year-int ()
   "Returns an integer, representing the current year."
   (nth-value 5 (get-decoded-time)))
-  
 
 (defun print-done ()
   "Write <space>Done. to standard output."
@@ -106,7 +105,7 @@ Otherwise, the program aborts it's operation with exit status 1"
 inferior-shell command with pipe, while exporting the results to a
 given file."
   (with-open-file (z-stream a-file :direction :output :if-exists :error)
-    (format z-stream (inferior-shell:run/ss a-command-pipe)))) 
+    (format z-stream (inferior-shell:run/ss a-command-pipe))))
 
 (defun export-to-txt (a-ledger-file a-argument)
   "Export accounting register data to txt, for the given period."
@@ -190,7 +189,9 @@ That makes for 5 arguments. But sbcl --noinform --script counts as 1 whole.
 So that leaves 3 arguments to be checked for..."
   (cond
     ((eq (length sb-ext:*posix-argv*) 3)
-      (process-arguments (nth 1 sb-ext:*posix-argv*) (string-upcase (nth 2 sb-ext:*posix-argv*))))
+      (process-arguments
+        (nth 1 sb-ext:*posix-argv*)
+        (string-upcase (nth 2 sb-ext:*posix-argv*))))
     (T (usage))))
 
 ;;; Main entry point, to start the code.
