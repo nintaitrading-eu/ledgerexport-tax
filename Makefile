@@ -28,8 +28,8 @@ $(TARGET):
 
 clean:
 	@echo cleaning...
-	@echo rm -fv ${TARGET} ${TARGET}-${VERSION}.tar.gz ${MANIFEST}
-	@rm -fv ${TARGET} ${TARGET}-${VERSION}.tar.gz ${MANIFEST}
+	@echo rm -fv ${TARGET} ${TARGET}-${VERSION}.tar.gz
+	@rm -fv ${TARGET} ${TARGET}-${VERSION}.tar.gz
 
 dist: clean
 	@echo creating dist tarball
