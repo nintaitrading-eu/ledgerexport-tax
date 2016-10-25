@@ -22,7 +22,7 @@ options:
 	@echo ${BUILDOPTS}
 
 $(TARGET):
-	@echo Building executable with buildapp...
+	@echo Building executable...
 	@echo ${CL} ${BUILDOPTS}
 	@${CL} ${BUILDOPTS}
 
