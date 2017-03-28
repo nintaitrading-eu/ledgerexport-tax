@@ -146,9 +146,17 @@ given file."
   (export-month a-ledger-file (get-month-3-from-quarter a-quarter))
 )
 
+;;(defun get-quarter-month (a-quarter a-index)
+;;  (cond (eq a-quarter 'Q1)))
+;; TODO: Invent algorithm, to go from
+;; 1 ? (1 2 3) to (1 2 3)
+;; 2 ? (1 2 3) to (4 5 6)
+;; 3 ? (1 2 3) to (7 8 9)
+
 (defun get-month-1-from-quarter (a-quarter)
   "Get the first month symbol, from a given quarter symbol."
   (nth 0 *g-months*) ; TODO: get the correct month
+  ;;(nth (get-quarter-month-index a-quarter 0) *g-months*)
 )
 
 (defun get-month-2-from-quarter (a-quarter)
