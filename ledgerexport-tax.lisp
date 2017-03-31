@@ -139,35 +139,28 @@ given file."
     (assemble-export-name a-quarter ".txt")
     `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -b ,(get-begindate-from-quarter a-quarter) -e ,(get-enddate-from-quarter a-quarter) reg) (sort -n)))
   ; Everything from the 1st month of Qn
-  (export-month a-ledger-file (get-month-1-from-quarter a-quarter))
+  (export-month a-ledger-file (get-quarter-month a-quarter 1))
   ; Everything from the 2nd month of Qn
-  (export-month a-ledger-file (get-month-2-from-quarter a-quarter))
+  (export-month a-ledger-file (get-quarter-month a-quarter 2))
   ; Everything from the 3rd month of Qn
-  (export-month a-ledger-file (get-month-3-from-quarter a-quarter))
-)
+  (export-month a-ledger-file (get-quarter-month a-quarter 3))
 
-;;(defun get-quarter-month (a-quarter a-index)
-;;  (cond (eq a-quarter 'Q1)))
-;; TODO: Invent algorithm, to go from
-;; 1 ? (1 2 3) to (1 2 3)
-;; 2 ? (1 2 3) to (4 5 6)
-;; 3 ? (1 2 3) to (7 8 9)
-
-(defun get-month-1-from-quarter (a-quarter)
-  "Get the first month symbol, from a given quarter symbol."
-  (nth 0 *g-months*) ; TODO: get the correct month
-  ;;(nth (get-quarter-month-index a-quarter 0) *g-months*)
-)
-
-(defun get-month-2-from-quarter (a-quarter)
-  "Get the second month symbol, from a given quarter symbol."
-  (nth 1 *g-months*) ; TODO: get the correct month
-)
-
-(defun get-month-3-from-quarter (a-quarter)
-  "Get the third month symbol, from a given quarter symbol."
-  (nth 2 *g-months*) ; TODO: get the correct month
-)
+(defun get-quarter-month (a-quarter a-index)
+  "Convert a valid quarter and index of one of the 3 months in that quarter,
+to a valid index in the *g-months* var."
+  ; Note:
+  ; 1 ? (1 2 3) to (1 2 3)
+  ; 2 ? (1 2 3) to (4 5 6)
+  ; 3 ? (1 2 3) to (7 8 9)
+  ; 3 * (n - 1) + (1 2 3)
+  ; (+ (* 3 (- a-quarter 1)) a-index)
+  ; Note: (- a-quarter 1) is equivalent to (position a-quarter *g-quarters*)
+  ; e.g.: (get-quarter-month ('Q2 3)) gives 5. Using this as an index in
+  ; *g-months*, we find the correct month of June.
+  (cond
+    ((and (member a-quarter *g-quarters*) (member a-index '(1 2 3)))
+      (- (+ (* 3 (position a-quarter *g-quarters*)) a-index) 1)
+    (T nil)))
 
 (defun process-arguments (a-ledger-file-str a-argument-str)
   "Print usage info or start export for a valid given period."
