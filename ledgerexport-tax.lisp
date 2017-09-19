@@ -134,16 +134,17 @@ given file."
 (defun export-quarter (a-ledger-file a-quarter)
   "Export accounting register data to several txt files, for the given quarter and also each month in the quarter."
   ; Everything from Qn
-  (format t "~aExecuting command ~a -f ~a -b ~a -e ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (get-begindate-from-quarter a-quarter) (get-enddate-from-quarter a-quarter))
-  (export-to-txt-cmd
-    (assemble-export-name a-quarter ".txt")
-    `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -b ,(get-begindate-from-quarter a-quarter) -e ,(get-enddate-from-quarter a-quarter) reg) (sort -n)))
-  ; Everything from the 1st month of Qn
-  (export-month a-ledger-file (get-quarter-month a-quarter 1))
-  ; Everything from the 2nd month of Qn
-  (export-month a-ledger-file (get-quarter-month a-quarter 2))
-  ; Everything from the 3rd month of Qn
-  (export-month a-ledger-file (get-quarter-month a-quarter 3))
+  (progn
+    (format t "~aExecuting command ~a -f ~a -b ~a -e ~a reg | sort -n..." *g-termprefix* *g-ledger-cmd* a-ledger-file (get-begindate-from-quarter a-quarter) (get-enddate-from-quarter a-quarter))
+    (export-to-txt-cmd
+      (assemble-export-name a-quarter ".txt")
+      `(inferior-shell:pipe (,*g-ledger-cmd* -f ,a-ledger-file -b ,(get-begindate-from-quarter a-quarter) -e ,(get-enddate-from-quarter a-quarter) reg) (sort -n)))
+    ; Everything from the 1st month of Qn
+    (export-month a-ledger-file (get-quarter-month a-quarter 1))
+    ; Everything from the 2nd month of Qn
+    (export-month a-ledger-file (get-quarter-month a-quarter 2))
+    ; Everything from the 3rd month of Qn
+    (export-month a-ledger-file (get-quarter-month a-quarter 3))))
 
 (defun get-quarter-month (a-quarter a-index)
   "Convert a valid quarter and index of one of the 3 months in that quarter,
