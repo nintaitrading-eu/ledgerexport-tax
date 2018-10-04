@@ -18,3 +18,19 @@ This last step is needed, because the accounting software I use, does not accept
 
 * sbcl, since this is a common lisp script. +
 * vim, because that is used to transform the txt to pdf.
+= avg_price-rs
+
+== Build status
+
+|==============================
+| branch | build status
+| ledgerexport-tax-cl-develop | image:https://travis-ci.org/nintaitrading-eu/ledgerexport-tax-cl.svg?branch=ledgerexport-tax-cl-develop["Build Status", link="https://travis-ci.org/nintaitrading-eu/ledgerexport-tax-cl"]
+| ledgerexport-tax-cl-release | image:https://travis-ci.org/nintaitrading-eu/ledgerexport-tax-cl.svg?branch=ledgerexport-tax-cl-release["Build Status", link="https://travis-ci.org/nintaitrading-eu/ledgerexport-tax-cl"]
+|==============================
+
+== Release
+
+|==============================
+| date | version
+| N/A | N/A 
+|==============================
