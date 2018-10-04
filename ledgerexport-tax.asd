@@ -6,7 +6,6 @@
   ;:date "2016-08-24"
   :license "BSD 3.0"
   :depends-on (#:quicklisp
-               #:asdf
                #:inferior-shell)
   :serial t
   :components ((:file "package")
