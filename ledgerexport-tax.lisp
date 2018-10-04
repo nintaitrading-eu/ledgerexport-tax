@@ -161,7 +161,7 @@ to a valid index in the *g-months* var."
   (cond
     ((and (member a-quarter *g-quarters*) (member a-index '(1 2 3)))
       (- (+ (* 3 (position a-quarter *g-quarters*)) a-index) 1)
-    (T nil)))
+    (T nil))))
 
 (defun process-arguments (a-ledger-file-str a-argument-str)
   "Print usage info or start export for a valid given period."
