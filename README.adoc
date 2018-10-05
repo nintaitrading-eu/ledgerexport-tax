@@ -58,8 +58,8 @@ After loading like that, you can set parameters and call main, like this:
 
 |==============================
 | branch | build status
-| ledgerexport-tax-cl-develop | image:https://travis-ci.org/nintaitrading-eu/ledgerexport-tax-cl.svg?branch=ledgerexport-tax-cl-develop["Build Status", link="https://travis-ci.org/nintaitrading-eu/ledgerexport-tax-cl"]
-| ledgerexport-tax-cl-release | image:https://travis-ci.org/nintaitrading-eu/ledgerexport-tax-cl.svg?branch=ledgerexport-tax-cl-release["Build Status", link="https://travis-ci.org/nintaitrading-eu/ledgerexport-tax-cl"]
+| ledgerexport-tax-cl-develop | image:https://travis-ci.com/nintaitrading-eu/ledgerexport-tax-cl.svg?branch=ledgerexport-tax-cl-develop["Build Status", link="https://travis-ci.com/nintaitrading-eu/ledgerexport-tax-cl"]
+| ledgerexport-tax-cl-release | image:https://travis-ci.com/nintaitrading-eu/ledgerexport-tax-cl.svg?branch=ledgerexport-tax-cl-release["Build Status", link="https://travis-ci.com/nintaitrading-eu/ledgerexport-tax-cl"]
 |==============================
 
 == Release
