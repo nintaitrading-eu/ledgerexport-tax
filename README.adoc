@@ -18,3 +18,53 @@ This last step is needed, because the accounting software I use, does not accept
 
 * sbcl, since this is a common lisp script. +
 * vim, because that is used to transform the txt to pdf.
+
+== Loading
+
+You can start sbcl and execute: +
+(push #p"/path/to/dev/ledgerexport-tax/")
+
+followed by a: +
+(ql:quickload :ledgerexport-tax)
+
+TODO: Find a better way to do this. I also need to do the push thing everytime, which seems weird to me.
+
+There is also the following to be added to .sblrc: +
+
+++++
+;;; The following was added, to allow ql:quickload on own projects.
+#+quicklisp
+(progn
+(pushnew #P"/home/myusername/dev/ledgerexport-tax/"
+ql:*local-project-directories*))
+++++
+
+This allows starting sbcl and doing
+
+++++
+(ql:quickload :ledgerexport-tax)
+++++
+
+but it doesn't work for starting as a script with sbcl --noinform --script.
+
+After loading like that, you can set parameters and call main, like this:
+
+++++
+(setf sb-ext:*posix-argv* (list "sbcl" "~/doc/ledger/ledger.dat" "Q1"))
+(main)
+++++
+
+== Build status
+
+|==============================
+| branch | build status
+| ledgerexport-tax-cl-develop | image:https://travis-ci.com/nintaitrading-eu/ledgerexport-tax-cl.svg?branch=ledgerexport-tax-cl-develop["Build Status", link="https://travis-ci.com/nintaitrading-eu/ledgerexport-tax-cl"]
+| ledgerexport-tax-cl-release | image:https://travis-ci.com/nintaitrading-eu/ledgerexport-tax-cl.svg?branch=ledgerexport-tax-cl-release["Build Status", link="https://travis-ci.com/nintaitrading-eu/ledgerexport-tax-cl"]
+|==============================
+
+== Release
+
+|==============================
+| date | version
+| N/A | N/A 
+|==============================
